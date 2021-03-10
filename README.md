@@ -1,4 +1,4 @@
-# Kassogtha  
+# Kassogtha
 ### Annotation application to edit localizations created in MBARI's Cthulthu   
 #### Useful Links:
 -[UI_MOCKUP via draw.io](draw.io)  
