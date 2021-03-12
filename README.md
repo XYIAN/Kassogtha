@@ -7,7 +7,9 @@
 #### To Do:  
 - [ ] Complete [UI_Mockup](https://github.com/XYIAN/Kassogtha/blob/main/UI_Mockup.drawio)  
 - [ ] Prototype application using gradle or maven   
-- [ ] Add 2 seperate working UIs to prototype   
+- [ ] Add 2 seperate working UIs to prototype
+- [ ] Create some sample programs that use JavaFX
+
 
 
  
