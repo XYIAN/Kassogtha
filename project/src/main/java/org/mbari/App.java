@@ -1,17 +1,21 @@
 package org.mbari;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
+// import javafx.scene.control.TableCell;
+// import javafx.scene.control.TableColumn;
+// import javafx.scene.control.TableView;
+// import javafx.scene.control.TextField;
+// import javafx.scene.control.Button;
+// import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.ListView;
 import javafx.geometry.Insets;
+import javafx.event.*;
 
 // import javafx.scene.layout.VBox;
 // import javafx.scene.layout.HBox;
@@ -20,6 +24,8 @@ import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+
 import java.time.Duration;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
 import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
@@ -29,7 +35,49 @@ import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
  */
 public class App extends Application {
 
+
+
     private IO io;
+
+
+    static class XCell extends ListCell<String> {
+        HBox hbox = new HBox();
+        Label label = new Label("(empty)");
+        Pane pane = new Pane();
+        Button button = new Button("Seek");
+        String lastItem;
+
+        public XCell() {
+            super();
+            hbox.getChildren().addAll(label, pane, button);
+            HBox.setHgrow(pane, Priority.ALWAYS);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println(lastItem + " : " + event);
+                }
+            });
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(null);  // No text in label of super class
+            if (empty) {
+                lastItem = null;
+                setGraphic(null);
+            } else {
+                lastItem = item;
+                label.setText(item!=null ? item : "<null>");
+                setGraphic(hbox);
+            }
+        }
+    }
+
+
+
+
+
 
     @Override
     public void start(Stage stage) {
@@ -42,6 +90,16 @@ public class App extends Application {
 
 
         // ------------------------------- Root --------------------------------------------
+
+
+        // ------------------------------- ICON --------------------------------------------
+
+        Image icon = new Image("/icons/octopus.png");
+
+        stage.getIcons().add(icon);
+
+        // ------------------------------- ICON --------------------------------------------
+
 
 
         // ------------------------------- Table --------------------------------------------
@@ -78,31 +136,44 @@ public class App extends Application {
 
         // ------------------------------- Table --------------------------------------------
 
+        // ------------------------------- ListView --------------------------------------------
 
 
         // VBox vBox = new VBox();
         // var sceneEmpty = new Scene(vBox, 480, 480);
         //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
 
-        ListView listview = new ListView();
-        listview.getItems().add("ITEM1");
-        listview.getItems().add("ITEM2");
-        listview.getItems().add("ITEM3");
-        listview.getItems().add("ITEM4");
+        StackPane pane = new StackPane();
+        ObservableList<String> list = FXCollections.observableArrayList(
+                "Item 1", "Item 2", "Item 3", "Item 4");
+        ListView<String> lv = new ListView<>(list);
+        lv.setCellFactory((Callback<ListView<String>, ListCell<String>>) new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new XCell();
+            }
+        });
+        pane.getChildren().add(lv);
 
-        HBox hBox = new HBox(listview, table);
+        HBox hBox = new HBox(pane, table);
 
-        hBox.setMargin(listview, new Insets(20,20,20,20));
+        hBox.setMargin(pane, new Insets(20,20,20,20));
         hBox.setMargin(table, new Insets(20,20,20,20));
+
+
+        // ------------------------------- ListView --------------------------------------------
+
 
         // ------------------------------- Top Menu --------------------------------------------
 
         
         // // ----- Image -----
-        // Image logo = new Image("/home/federico/Downloads/Kassogtha/Kassogtha/kassaghta/src/main/resources/kassogthaLogoSide.png");
+        Image logo = new Image("icons/kassogthaLogoSide.jpg");
         ImageView logoView = new ImageView();
-        // logoView.setImage(logo);
-        logoView.setPreserveRatio(true);
+        logoView.setFitHeight(70);
+        logoView.setFitWidth(200);
+        logoView.setImage(logo);
+        // logoView.setPreserveRatio(true);
         // // ----- Image -----
 
         // // ----- Search Bar -----
@@ -122,13 +193,13 @@ public class App extends Application {
 
         HBox topHbox = new HBox(logoView, spacer,  search);//logoView,
         topHbox.setMargin(search, new Insets(30,20,20,20));
-        // topHbox.setMargin(logoView, new Insets(20,20,20,20));
+        topHbox.setMargin(logoView, new Insets(20,20,20,20));
 
         
 
         // ------------------------------- Top Menu --------------------------------------------
 
-        // ------------------------------- Buttons --------------------------------------------
+        // ------------------------------- Bottom Buttons --------------------------------------------
 
         Button saveBtn = new Button("Save");
         Button downLoadBtn = new Button("Download");
@@ -139,7 +210,7 @@ public class App extends Application {
         hButtonBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
         hButtonBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
         
-        // ------------------------------- Buttons --------------------------------------------
+        // ------------------------------- Bottom Buttons --------------------------------------------
 
 
         root.setTop(topHbox);
