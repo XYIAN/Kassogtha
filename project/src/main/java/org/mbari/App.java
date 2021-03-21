@@ -13,8 +13,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.ListView;
 import javafx.geometry.Insets;
 
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+// import javafx.scene.layout.VBox;
+// import javafx.scene.layout.HBox;
+// import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -32,11 +34,15 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
 
-        // Parent root = FXMLLoader(getClass().getResource("src/main/java/org/resources/App.fxml"))
-        // Scene scence = new Scene(root, 1000, 700);
 
-        // stage.setScene(scene);
-        // stage.show();
+        // ------------------------------- Root --------------------------------------------
+
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(10,10,10,10));
+
+
+        // ------------------------------- Root --------------------------------------------
+
 
         // ------------------------------- Table --------------------------------------------
 
@@ -105,11 +111,16 @@ public class App extends Application {
         search.setPromptText("Search");
         search.setMinWidth(200);
         search.setMinHeight(25);
+
+        final Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        spacer.setMinSize(10,1);
+
  
  
         // ----- Search Bar -----
 
-        HBox topHbox = new HBox(logoView, search);//logoView,
+        HBox topHbox = new HBox(logoView, spacer,  search);//logoView,
         topHbox.setMargin(search, new Insets(30,20,20,20));
         // topHbox.setMargin(logoView, new Insets(20,20,20,20));
 
@@ -131,12 +142,15 @@ public class App extends Application {
         // ------------------------------- Buttons --------------------------------------------
 
 
-        VBox containerBox = new VBox(topHbox, hBox, hButtonBox);
+        root.setTop(topHbox);
+        root.setCenter(hBox);
+        root.setBottom(hButtonBox);
+        // VBox containerBox = new VBox(topHbox, hBox, hButtonBox);
 
 
         // ------------------------------- Stage --------------------------------------------
 
-        var scene = new Scene(containerBox, 700, 520);
+        var scene = new Scene(root);
         // scene.setResizable(false);
         stage.setTitle("Kassogtha");
         stage.setScene(scene);
