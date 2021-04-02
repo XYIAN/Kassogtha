@@ -144,16 +144,18 @@ public class App extends Application {
         //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
 
         StackPane pane = new StackPane();
-        ObservableList<String> list = FXCollections.observableArrayList(
-                "Item 1", "Item 2", "Item 3", "Item 4");
-        ListView<String> lv = new ListView<>(list);
-        lv.setCellFactory((Callback<ListView<String>, ListCell<String>>) new Callback<ListView<String>, ListCell<String>>() {
+
+
+        ObservableList<String> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
+        ListView<String> listview = new ListView<>(list);
+
+        listview.setCellFactory((Callback<ListView<String>, ListCell<String>>) new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> param) {
                 return new XCell();
-            }
+            };
         });
-        pane.getChildren().add(lv);
+        pane.getChildren().add(listview);
 
         HBox hBox = new HBox(pane, table);
 
@@ -228,7 +230,8 @@ public class App extends Application {
         stage.setResizable(false);
         stage.show();
 
-        initComms(table);
+        initComms(table, listview);
+
 
         // ------------------------------- Stage --------------------------------------------
 
@@ -242,7 +245,7 @@ public class App extends Application {
                                 duration.toMillisPart());
     }
 
-    private void initComms(TableView<Localization> table) {
+    private void initComms(TableView<Localization> table,ListView<String> listview) {
         var incomingPort = 5561;   // ZeroMQ subscriber port
         var outgoingPort = 5562;   // ZeroMQ publisher port
         var incomingTopic = "localization";
@@ -259,6 +262,13 @@ public class App extends Application {
             }
         });
         table.setItems(items);
+        System.out.println("Is this printing?" + items.toString());
+
+        for (Localization localization : items) {
+            System.out.println("Is this printing?" + localization.toString());
+
+            listview.getItems().add(localization.toString());
+        }
     }
 
     public static void main(String[] args) {
