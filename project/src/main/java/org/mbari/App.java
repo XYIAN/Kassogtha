@@ -22,6 +22,8 @@ import javafx.event.*;
 // import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -40,12 +42,12 @@ public class App extends Application {
     private IO io;
 
 
-    static class XCell extends ListCell<String> {
+    static class XCell extends ListCell<Localization> {
         HBox hbox = new HBox();
         Label label = new Label("(empty)");
         Pane pane = new Pane();
         Button button = new Button("Seek");
-        String lastItem;
+        Localization lastItem;
 
         public XCell() {
             super();
@@ -60,7 +62,7 @@ public class App extends Application {
         }
 
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(Localization item , boolean empty) {
             super.updateItem(item, empty);
             setText(null);  // No text in label of super class
             if (empty) {
@@ -68,9 +70,15 @@ public class App extends Application {
                 setGraphic(null);
             } else {
                 lastItem = item;
-                label.setText(item!=null ? item : "<null>");
+                Duration duration = item.getElapsedTime();
+                String name = item.getConcept();
+                label.setText(item!=null ? name : "<null>");
                 setGraphic(hbox);
             }
+        }
+
+        protected void setLabel(String newlabel){
+            label.setText(newlabel);
         }
     }
 
@@ -144,16 +152,30 @@ public class App extends Application {
         //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
 
         StackPane pane = new StackPane();
-        ObservableList<String> list = FXCollections.observableArrayList(
-                "Item 1", "Item 2", "Item 3", "Item 4");
-        ListView<String> lv = new ListView<>(list);
-        lv.setCellFactory((Callback<ListView<String>, ListCell<String>>) new Callback<ListView<String>, ListCell<String>>() {
+
+
+        // ObservableList<Localization> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
+        ListView<Localization> listview = new ListView<>();
+
+        listview.setCellFactory((Callback<ListView<Localization>, ListCell<Localization>>) new Callback<ListView<Localization>, ListCell<Localization>>() {
             @Override
-            public ListCell<String> call(ListView<String> param) {
+            public ListCell<Localization> call(ListView<Localization> param) {
                 return new XCell();
+            };
+        });
+
+        listview.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    // event.getTarget().getChildren().setLabel("SOme new label");
+                }
             }
         });
-        pane.getChildren().add(lv);
+
+        // listview.prefWidthProperty().bind(listview.widthProperty().multiply(1.5));
+        listview.setMinWidth(200);
+        pane.getChildren().add(listview);
 
         HBox hBox = new HBox(pane, table);
 
@@ -228,13 +250,14 @@ public class App extends Application {
         stage.setResizable(false);
         stage.show();
 
-        initComms(table);
+        initComms(table, listview);
+
 
         // ------------------------------- Stage --------------------------------------------
 
     }
 
-    private String formatDuration(Duration duration) {
+    private static String formatDuration(Duration duration) {
         return String.format("%d:%02d:%02d:%03d", 
                                 duration.toHours(), 
                                 duration.toMinutesPart(), 
@@ -242,7 +265,7 @@ public class App extends Application {
                                 duration.toMillisPart());
     }
 
-    private void initComms(TableView<Localization> table) {
+    private void initComms(TableView<Localization> table,ListView<Localization> listview) {
         var incomingPort = 5561;   // ZeroMQ subscriber port
         var outgoingPort = 5562;   // ZeroMQ publisher port
         var incomingTopic = "localization";
@@ -259,6 +282,7 @@ public class App extends Application {
             }
         });
         table.setItems(items);
+        listview.setItems(items);
     }
 
     public static void main(String[] args) {
