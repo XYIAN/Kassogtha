@@ -1,4 +1,5 @@
 module org.mbari {
+    requires org.slf4j;
     requires javafx.controls;
     requires io.reactivex.rxjava2;
     requires vcr4j.core;

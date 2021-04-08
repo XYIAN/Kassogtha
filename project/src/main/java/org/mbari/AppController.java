@@ -4,6 +4,8 @@ import org.mbari.vcr4j.commands.SeekElapsedTimeCmd;
 import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
 import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -12,6 +14,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class AppController {
+
+    private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
     private final EventBus eventBus = new EventBus();
 
@@ -32,6 +36,7 @@ public class AppController {
         }
 
         if (io == null) {
+            log.info("Intializing localization ZeroMQ comms");
             io = new IO(inport, outport, "localization", "localization");
         }
     }
@@ -45,6 +50,7 @@ public class AppController {
 
         if (videoIo == null) {
             try {
+                log.info("Intializing video control UDP comms");
                 videoIo = new SharktopodaVideoIO(videoReferenceUuid, "localhost", port);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
@@ -70,6 +76,7 @@ public class AppController {
 
     public void seek(Duration duration) {
         if (videoIo != null) {
+            log.debug("Seeing to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
         }
     }
@@ -78,6 +85,7 @@ public class AppController {
      * Seeks to the row selected in
      */
     public void seek() {
+
         Optional<Localization> selectedOpt = app.getListview()
                 .getSelectionModel()
                 .getSelectedItems()
