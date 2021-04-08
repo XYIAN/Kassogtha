@@ -72,6 +72,7 @@ public class App extends Application {
                 lastItem = item;
                 Duration duration = item.getElapsedTime();
                 String name = item.getConcept();
+                //add loc ID/UUID to use as name? 
                 label.setText(item!=null ? name : "<null>");
                 setGraphic(hbox);
             }
@@ -118,7 +119,7 @@ public class App extends Application {
         var conceptCol = new TableColumn<Localization, String>("Concept");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
         
-        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.5));
+        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
         var timeCol = new TableColumn<Localization, Duration>("ElapsedTime");
         timeCol.setCellValueFactory(new PropertyValueFactory<Localization, Duration>("elapsedTime"));
@@ -135,13 +136,36 @@ public class App extends Application {
                     }
                 };
             });
-        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.5));
+        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+        //adding name column 
+        var nameCol = new TableColumn<Localization, String>("Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("Name"));
+        nameCol.setCellFactory(column -> {
+                return new TableCell<Localization, String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        if (item == null || empty) {
+                            setText(null);
+                        }
+                        else {
+                            //loc = getLocalizations();
+                            setText(item);
+                        }
+                    }
+                };
+            });
+        nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
+        nameCol.setResizable(false); 
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
-        table.getColumns().addAll(timeCol, conceptCol);
-
+        table.getColumns().addAll(timeCol, nameCol, conceptCol);
+        table.setMinWidth(400);
+        //pane.getChildren().add(table);
+        //table.setOnMouseClicked(new EventHandler<MouseEvent>()){
+            //edit name in here?
+        //};
         // ------------------------------- Table --------------------------------------------
 
         // ------------------------------- ListView --------------------------------------------
@@ -226,11 +250,13 @@ public class App extends Application {
         Button saveBtn = new Button("Save");
         Button downLoadBtn = new Button("Download");
         Button upLoadBtn = new Button("Upload");
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn);
+        Button clearBtn = new Button("Clear");
+        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn);
         
         hButtonBox.setMargin(saveBtn, new Insets(20,20,20,20));
         hButtonBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
         hButtonBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
+        hButtonBox.setMargin(clearBtn, new Insets(20,20,20,20));
         
         // ------------------------------- Bottom Buttons --------------------------------------------
 
