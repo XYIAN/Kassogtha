@@ -5,8 +5,11 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 /**
- * @author Brian Schlining
- * @since 2017-05-10T09:55:00
+ * README: I've added this in case we needs an event bus later. EventBuses are a great way to
+ * allow UI components to talk to each other. Without an eventbus each componcnet would need a
+ * reference to every othe component it interacts with. With an event bus, a componenet only needs
+ * a reference to the eventbus, it publishes messages and other componeents can listen for and act
+ * on those messages if needed
  */
 public class EventBus {
 

@@ -44,6 +44,8 @@ import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
  */
 public class App extends Application {
 
+    // README: For UI apps a common practice is to do the layout in one class. Then create a second
+    // class with the non-ui logic. This keeps the code base much cleaner
     private AppController appController;
 
     private TableView<Localization> table;
@@ -148,6 +150,10 @@ public class App extends Application {
 
         StackPane pane = new StackPane();
 
+
+        // README: THe listview is redundant! It's showing the same info as the TableView. Move the
+        // seek button to just a single button in the UI (or you can try a popup on the tableview)
+        // The button can get the selected items from the table and seek to them
 
         // ObservableList<Localization> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
         listview = new ListView<>();

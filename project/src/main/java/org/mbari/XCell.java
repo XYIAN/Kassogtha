@@ -11,6 +11,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
+/**
+ * README: It's a good practice to move custom UI components to there own classfile rather
+ * than creating internal static classes. This helps cut down on code clutter.
+ */
 public class XCell extends ListCell<Localization> {
   HBox hbox = new HBox();
   Label label = new Label("(empty)");
@@ -24,11 +28,11 @@ public class XCell extends ListCell<Localization> {
       hbox.getChildren().addAll(label, pane, button);
       HBox.setHgrow(pane, Priority.ALWAYS);
 
-      // FIXME: ListCells are reused. So it's indeterminate which localization is being called
-      // Don't put the button in the list cell
+      // README: Don't put the button in the list cell. A cell is reused during rendering and
+      // SO this creates an issue when tracking which Localization is being acted upon
       button.setOnAction(event -> appController.seek());
 
-      // --- Java 8 introduced lambdas/functions. You can use these for
+      // README: Java 8 introduced lambdas/functions. You can use these for
       // event handlers with JavaFS to greatly simplify code. This one liner
       // does the same thing as the commented out block below.
       // button.setOnAction(event -> System.out.println(lastItem + " : " + event));

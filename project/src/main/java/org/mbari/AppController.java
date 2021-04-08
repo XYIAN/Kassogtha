@@ -29,6 +29,11 @@ public class AppController {
         this.app = app;
     }
 
+    /**
+     * Initializes localization communications.
+     * @param inport
+     * @param outport
+     */
     public void initLocalizationComms(int inport, int outport) {
         if (io != null && (io.getIncomingPort() != inport || io.getOutgoingPort() != outport)) {
            io.close();
@@ -42,6 +47,11 @@ public class AppController {
     }
 
 
+    /**
+     * Initializes control communications
+     * @param videoReferenceUuid
+     * @param port
+     */
     public void initControlComms(UUID videoReferenceUuid, int port) {
         if (videoIo != null && !videoIo.getUUID().equals(videoReferenceUuid)) {
             videoIo.close();
