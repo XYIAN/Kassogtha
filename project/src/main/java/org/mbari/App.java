@@ -148,6 +148,7 @@ public class App extends Application {
                             setText(null);
                         }
                         else {
+                            //loc = getLocalizations();
                             setText(item);
                         }
                     }
@@ -162,7 +163,9 @@ public class App extends Application {
         table.getColumns().addAll(timeCol, nameCol, conceptCol);
         table.setMinWidth(400);
         //pane.getChildren().add(table);
-
+        //table.setOnMouseClicked(new EventHandler<MouseEvent>()){
+            //edit name in here?
+        //};
         // ------------------------------- Table --------------------------------------------
 
         // ------------------------------- ListView --------------------------------------------
