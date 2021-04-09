@@ -1,6 +1,7 @@
 package org.mbari;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -29,63 +30,35 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.Duration;
+import java.util.UUID;
+
+import org.mbari.vcr4j.VideoIO;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
 import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
+import org.mbari.vcr4j.sharktopoda.SharktopodaError;
+import org.mbari.vcr4j.sharktopoda.SharktopodaState;
+import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
 
+    // README: For UI apps a common practice is to do the layout in one class. Then create a second
+    // class with the non-ui logic. This keeps the code base much cleaner
+    private AppController appController;
 
+    private TableView<Localization> table;
 
-    private IO io;
+    private ListView<Localization> listview;
 
-
-    static class XCell extends ListCell<Localization> {
-        HBox hbox = new HBox();
-        Label label = new Label("(empty)");
-        Pane pane = new Pane();
-        Button button = new Button("Seek");
-        Localization lastItem;
-
-        public XCell() {
-            super();
-            hbox.getChildren().addAll(label, pane, button);
-            HBox.setHgrow(pane, Priority.ALWAYS);
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    System.out.println(lastItem + " : " + event);
-                }
-            });
-        }
-
-        @Override
-        protected void updateItem(Localization item , boolean empty) {
-            super.updateItem(item, empty);
-            setText(null);  // No text in label of super class
-            if (empty) {
-                lastItem = null;
-                setGraphic(null);
-            } else {
-                lastItem = item;
-                Duration duration = item.getElapsedTime();
-                String name = item.getConcept();
-                //add loc ID/UUID to use as name? 
-                label.setText(item!=null ? name : "<null>");
-                setGraphic(hbox);
-            }
-        }
-
-        protected void setLabel(String newlabel){
-            label.setText(newlabel);
-        }
+    /**
+     * JavaFX calls this before start()
+     */
+    @Override
+    public void init() {
+        appController = new AppController(this);
     }
-
-
-
-
 
 
     @Override
@@ -113,7 +86,7 @@ public class App extends Application {
 
         // ------------------------------- Table --------------------------------------------
 
-        var table = new TableView<Localization>();
+        table = new TableView<Localization>();
         table.setEditable(false);
 
         var conceptCol = new TableColumn<Localization, String>("Concept");
@@ -139,7 +112,7 @@ public class App extends Application {
         timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
         //adding name column 
         var nameCol = new TableColumn<Localization, String>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("Name"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
         nameCol.setCellFactory(column -> {
                 return new TableCell<Localization, String>() {
                     @Override
@@ -178,13 +151,17 @@ public class App extends Application {
         StackPane pane = new StackPane();
 
 
+        // README: THe listview is redundant! It's showing the same info as the TableView. Move the
+        // seek button to just a single button in the UI (or you can try a popup on the tableview)
+        // The button can get the selected items from the table and seek to them
+
         // ObservableList<Localization> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
-        ListView<Localization> listview = new ListView<>();
+        listview = new ListView<>();
 
         listview.setCellFactory((Callback<ListView<Localization>, ListCell<Localization>>) new Callback<ListView<Localization>, ListCell<Localization>>() {
             @Override
             public ListCell<Localization> call(ListView<Localization> param) {
-                return new XCell();
+                return new XCell(appController);
             };
         });
 
@@ -203,8 +180,8 @@ public class App extends Application {
 
         HBox hBox = new HBox(pane, table);
 
-        hBox.setMargin(pane, new Insets(20,20,20,20));
-        hBox.setMargin(table, new Insets(20,20,20,20));
+        HBox.setMargin(pane, new Insets(20,20,20,20));
+        HBox.setMargin(table, new Insets(20,20,20,20));
 
 
         // ------------------------------- ListView --------------------------------------------
@@ -238,8 +215,8 @@ public class App extends Application {
         // ----- Search Bar -----
 
         HBox topHbox = new HBox(logoView, spacer,  search);//logoView,
-        topHbox.setMargin(search, new Insets(30,20,20,20));
-        topHbox.setMargin(logoView, new Insets(20,20,20,20));
+        HBox.setMargin(search, new Insets(30,20,20,20));
+        HBox.setMargin(logoView, new Insets(20,20,20,20));
 
         
 
@@ -253,10 +230,10 @@ public class App extends Application {
         Button clearBtn = new Button("Clear");
         HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn);
         
-        hButtonBox.setMargin(saveBtn, new Insets(20,20,20,20));
-        hButtonBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
-        hButtonBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
-        hButtonBox.setMargin(clearBtn, new Insets(20,20,20,20));
+        HBox.setMargin(saveBtn, new Insets(20,20,20,20));
+        HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
+        HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
+        HBox.setMargin(clearBtn, new Insets(20,20,20,20));
         
         // ------------------------------- Bottom Buttons --------------------------------------------
 
@@ -292,11 +269,11 @@ public class App extends Application {
     }
 
     private void initComms(TableView<Localization> table,ListView<Localization> listview) {
+
         var incomingPort = 5561;   // ZeroMQ subscriber port
         var outgoingPort = 5562;   // ZeroMQ publisher port
-        var incomingTopic = "localization";
-        var outgoingTopic = "localization";
-        io = new IO(outgoingPort, incomingPort, outgoingTopic, incomingTopic);
+        appController.initLocalizationComms(outgoingPort, incomingPort);
+        IO io = appController.getIo();
 
         var items = io.getController().getLocalizations();
         items.addListener((ListChangeListener.Change<? extends Localization> c) -> {
@@ -307,8 +284,27 @@ public class App extends Application {
                 }
             }
         });
+
+        items.addListener((ListChangeListener.Change<? extends Localization> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    Localization head = c.getAddedSubList().get(0);
+                    appController.initControlComms(head.getVideoReferenceUuid(), 8800);
+                }
+            }
+        });
+
+
         table.setItems(items);
         listview.setItems(items);
+    }
+
+    public TableView<Localization> getTable() {
+        return table;
+    }
+
+    public ListView<Localization> getListview() {
+        return listview;
     }
 
     public static void main(String[] args) {
