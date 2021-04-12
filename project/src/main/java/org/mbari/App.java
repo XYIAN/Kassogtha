@@ -52,6 +52,8 @@ public class App extends Application {
 
     private ListView<Localization> listview;
 
+    private Localization currentLoc;
+
     /**
      * JavaFX calls this before start()
      */
@@ -135,6 +137,12 @@ public class App extends Application {
 
         table.getColumns().addAll(nameCol, conceptCol, timeCol);
         table.setMinWidth(470);
+        
+        // ------------------------------- Table Eventhandler--------------------------------------------
+        
+        
+        
+        
         //pane.getChildren().add(table);
         //table.setOnMouseClicked(new EventHandler<MouseEvent>()){
             //edit name in here?
@@ -156,31 +164,31 @@ public class App extends Application {
         // The button can get the selected items from the table and seek to them
 
         // ObservableList<Localization> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
-        listview = new ListView<>();
+        // listview = new ListView<>();
 
-        listview.setCellFactory((Callback<ListView<Localization>, ListCell<Localization>>) new Callback<ListView<Localization>, ListCell<Localization>>() {
-            @Override
-            public ListCell<Localization> call(ListView<Localization> param) {
-                return new XCell(appController);
-            };
-        });
+        // listview.setCellFactory((Callback<ListView<Localization>, ListCell<Localization>>) new Callback<ListView<Localization>, ListCell<Localization>>() {
+        //     @Override
+        //     public ListCell<Localization> call(ListView<Localization> param) {
+        //         return new XCell(appController);
+        //     };
+        // });
 
-        listview.setOnMouseClicked(new EventHandler<MouseEvent>(){
-            @Override
-            public void handle(MouseEvent event){
-                if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    // event.getTarget().getChildren().setLabel("SOme new label");
-                }
-            }
-        });
+        // listview.setOnMouseClicked(new EventHandler<MouseEvent>(){
+        //     @Override
+        //     public void handle(MouseEvent event){
+        //         if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+        //             // event.getTarget().getChildren().setLabel("SOme new label");
+        //         }
+        //     }
+        // });
 
         // listview.prefWidthProperty().bind(listview.widthProperty().multiply(1.5));
-        listview.setMinWidth(200);
-        pane.getChildren().add(listview);
+        // listview.setMinWidth(200);
+        // pane.getChildren().add(listview);
 
         HBox hBox = new HBox(table);
 
-        HBox.setMargin(pane, new Insets(20,20,20,20));
+        // HBox.setMargin(pane, new Insets(20,20,20,20));
         HBox.setMargin(table, new Insets(20,20,20,20));
 
 
@@ -227,8 +235,11 @@ public class App extends Application {
         Button saveBtn = new Button("Save");
         Button downLoadBtn = new Button("Download");
         Button upLoadBtn = new Button("Upload");
-        Button clearBtn = new Button("Clear");
+        Button clearBtn = new Button("Delete");
+        clearBtn.setOnAction(e -> deleteRowFromTable());
+
         Button seekBtn = new Button("Seek");
+        seekBtn.setOnAction(e -> seekButtonClicked());
         HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
@@ -298,7 +309,7 @@ public class App extends Application {
 
 
         table.setItems(items);
-        listview.setItems(items);
+        // listview.setItems(items);
     }
 
     public TableView<Localization> getTable() {
@@ -311,6 +322,20 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    private void deleteRowFromTable(){
+        // table.getItems().removeAll(
+            // table.getSelectionModel().getSelectedItem()
+        // );
+// table.re
+        // table.getSelectionModel().getSelectedItem().
+    }
+
+    // after this function call the current location will be accessable
+    private void seekButtonClicked(){
+        System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
+        currentLoc = table.getSelectionModel().getSelectedItem();
     }
 
 }
