@@ -9,7 +9,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <javafx.version>15.0.1</javafx.version>
-        <vcr4j.version>4.4.0.jre11</vcr4j.version>
+        <vcr4j.version>4.4.1.jre11</vcr4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -19,8 +19,23 @@
         </dependency>
         <dependency>
             <groupId>org.mbari.vcr4j</groupId>
+            <artifactId>vcr4j-sharktopoda</artifactId>
+            <version>${vcr4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mbari.vcr4j</groupId>
             <artifactId>vcr4j-sharktopoda-client</artifactId>
             <version>${vcr4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.2.18</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.3.0-alpha4</version>
         </dependency>
     </dependencies>
     <build>
