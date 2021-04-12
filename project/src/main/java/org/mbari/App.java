@@ -133,8 +133,8 @@ public class App extends Application {
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
-        table.getColumns().addAll(timeCol, nameCol, conceptCol);
-        table.setMinWidth(400);
+        table.getColumns().addAll(nameCol, conceptCol, timeCol);
+        table.setMinWidth(470);
         //pane.getChildren().add(table);
         //table.setOnMouseClicked(new EventHandler<MouseEvent>()){
             //edit name in here?
@@ -178,7 +178,7 @@ public class App extends Application {
         listview.setMinWidth(200);
         pane.getChildren().add(listview);
 
-        HBox hBox = new HBox(pane, table);
+        HBox hBox = new HBox(table);
 
         HBox.setMargin(pane, new Insets(20,20,20,20));
         HBox.setMargin(table, new Insets(20,20,20,20));
@@ -203,7 +203,7 @@ public class App extends Application {
  
         TextField search = new TextField();
         search.setPromptText("Search");
-        search.setMinWidth(200);
+        search.setMinWidth(220);
         search.setMinHeight(25);
 
         final Pane spacer = new Pane();
@@ -228,12 +228,14 @@ public class App extends Application {
         Button downLoadBtn = new Button("Download");
         Button upLoadBtn = new Button("Upload");
         Button clearBtn = new Button("Clear");
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn);
+        Button seekBtn = new Button("Seek");
+        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
         HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
         HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
         HBox.setMargin(clearBtn, new Insets(20,20,20,20));
+        HBox.setMargin(seekBtn, new Insets(20,20,20,20));
         
         // ------------------------------- Bottom Buttons --------------------------------------------
 
