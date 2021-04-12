@@ -7,11 +7,15 @@ import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+
+// import com.google.gson.Gson;
 
 public class AppController {
 
@@ -103,5 +107,21 @@ public class AppController {
                 .findFirst();
 
         selectedOpt.ifPresent(item -> seek(item.getDuration()));
+    }
+
+    public void save() {
+        System.out.println("[DEBUG] AppController.save()");
+        var xs = new ArrayList<Localization>(io.getController().getLocalizations());
+        // var gson = new Gson();
+        // String json = gson.toJson(xs);
+        // try {
+        //     System.out.println("[DEBUG] AppController.save(): attempting to save JSON to file");
+        //     var writer = new java.io.FileWriter("somefile.json");
+        //     writer.write(json);
+        //     writer.close();
+        // }
+        // catch (IOException e){
+        //     System.out.println("[DEBUG] AppController.save(): IOException" + e.toString());
+        // }
     }
 }

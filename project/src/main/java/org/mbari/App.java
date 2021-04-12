@@ -225,6 +225,15 @@ public class App extends Application {
         // ------------------------------- Bottom Buttons --------------------------------------------
 
         Button saveBtn = new Button("Save");
+
+        saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                System.out.println("[DEBUG] MouseEvent.handle()");
+                appController.save();
+            }
+        });
+
         Button downLoadBtn = new Button("Download");
         Button upLoadBtn = new Button("Upload");
         Button clearBtn = new Button("Clear");
