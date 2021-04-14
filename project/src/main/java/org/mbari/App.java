@@ -124,6 +124,7 @@ public class App extends Application {
                         }
                         else {
                             //loc = getLocalizations();
+                            //Localization loc = loc.getElapsedTime(); 
                             setText(item);
                         }
                     }
@@ -235,17 +236,17 @@ public class App extends Application {
         Button saveBtn = new Button("Save");
         Button downLoadBtn = new Button("Download");
         Button upLoadBtn = new Button("Upload");
-        Button clearBtn = new Button("Delete");
-        clearBtn.setOnAction(e -> deleteRowFromTable());
-
+        Button deleteBtn = new Button("Delete");
+        deleteBtn.setOnAction(e -> deleteRowFromTable());
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
+
+        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, deleteBtn, seekBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
         HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
         HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
-        HBox.setMargin(clearBtn, new Insets(20,20,20,20));
+        HBox.setMargin(deleteBtn, new Insets(20,20,20,20));
         HBox.setMargin(seekBtn, new Insets(20,20,20,20));
         
         // ------------------------------- Bottom Buttons --------------------------------------------
