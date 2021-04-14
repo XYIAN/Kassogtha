@@ -2,16 +2,24 @@ package org.mbari;
 
 import org.mbari.vcr4j.commands.SeekElapsedTimeCmd;
 import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
+import org.mbari.vcr4j.sharktopoda.client.gson.DurationConverter;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
 import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class AppController {
 
@@ -103,5 +111,24 @@ public class AppController {
                 .findFirst();
 
         selectedOpt.ifPresent(item -> seek(item.getDuration()));
+    }
+
+    public void save() {
+        var xs = new ArrayList<Localization>(io.getController().getLocalizations());
+        Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .registerTypeAdapter(Duration.class, new DurationConverter())
+            .create();
+        String json = gson.toJson(xs);
+        try {
+            Date date = new Date() ;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss") ;
+            var writer = new java.io.FileWriter(simpleDateFormat.format(date) + ".json");
+            writer.write(json);
+            writer.close();
+        }
+        catch (IOException e){
+            System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
+        }
     }
 }
