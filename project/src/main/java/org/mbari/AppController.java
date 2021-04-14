@@ -94,7 +94,7 @@ public class AppController {
 
     public void seek(Duration duration) {
         if (videoIo != null) {
-            log.debug("Seeing to {}", duration);
+            log.debug("Seeking to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
         }
     }
@@ -111,6 +111,11 @@ public class AppController {
                 .findFirst();
 
         selectedOpt.ifPresent(item -> seek(item.getDuration()));
+    }
+
+    public void update(Localization localization) {
+        io.getController().removeLocalization(localization.getLocalizationUuid());
+        io.getController().addLocalization(localization);
     }
 
     public void save() {
