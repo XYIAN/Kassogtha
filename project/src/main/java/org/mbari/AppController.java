@@ -2,6 +2,7 @@ package org.mbari;
 
 import org.mbari.vcr4j.commands.SeekElapsedTimeCmd;
 import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
+import org.mbari.vcr4j.sharktopoda.client.gson.DurationConverter;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
 import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
 import org.slf4j.Logger;
@@ -10,12 +11,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class AppController {
 
@@ -110,24 +114,21 @@ public class AppController {
     }
 
     public void save() {
-        System.out.println("[DEBUG] AppController.save()");
         var xs = new ArrayList<Localization>(io.getController().getLocalizations());
-        System.out.println("[DEBUG] AppController.save() - xs created");
-        System.out.println("[DEBUG] AppController.save() - xs: " + xs);
-        var gson = new Gson();
-        System.out.println("[DEBUG] AppController.save() - gson created");
-        System.out.println("[DEBUG] AppController.save() - gson: " + gson);
+        Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .registerTypeAdapter(Duration.class, new DurationConverter())
+            .create();
         String json = gson.toJson(xs);
-        System.out.println("[DEBUG] AppController.save() - json created");
-        System.out.println("[DEBUG] AppController.save() - json: " + json);
         try {
-            System.out.println("[DEBUG] AppController.save() - attempting to save JSON to file");
-            var writer = new java.io.FileWriter("somefile.json");
+            Date date = new Date() ;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss") ;
+            var writer = new java.io.FileWriter(simpleDateFormat.format(date) + ".json");
             writer.write(json);
             writer.close();
         }
         catch (IOException e){
-            System.out.println("[DEBUG] AppController.save() - IOException: " + e.toString());
+            System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
         }
     }
 }

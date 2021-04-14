@@ -229,7 +229,6 @@ public class App extends Application {
         saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event){
-                System.out.println("[DEBUG] MouseEvent.handle()");
                 appController.save();
             }
         });
