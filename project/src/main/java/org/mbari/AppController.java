@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-// import com.google.gson.Gson;
+import com.google.gson.*;
 
 public class AppController {
 
@@ -112,16 +112,22 @@ public class AppController {
     public void save() {
         System.out.println("[DEBUG] AppController.save()");
         var xs = new ArrayList<Localization>(io.getController().getLocalizations());
-        // var gson = new Gson();
-        // String json = gson.toJson(xs);
-        // try {
-        //     System.out.println("[DEBUG] AppController.save(): attempting to save JSON to file");
-        //     var writer = new java.io.FileWriter("somefile.json");
-        //     writer.write(json);
-        //     writer.close();
-        // }
-        // catch (IOException e){
-        //     System.out.println("[DEBUG] AppController.save(): IOException" + e.toString());
-        // }
+        System.out.println("[DEBUG] AppController.save() - xs created");
+        System.out.println("[DEBUG] AppController.save() - xs: " + xs);
+        var gson = new Gson();
+        System.out.println("[DEBUG] AppController.save() - gson created");
+        System.out.println("[DEBUG] AppController.save() - gson: " + gson);
+        String json = gson.toJson(xs);
+        System.out.println("[DEBUG] AppController.save() - json created");
+        System.out.println("[DEBUG] AppController.save() - json: " + json);
+        try {
+            System.out.println("[DEBUG] AppController.save() - attempting to save JSON to file");
+            var writer = new java.io.FileWriter("somefile.json");
+            writer.write(json);
+            writer.close();
+        }
+        catch (IOException e){
+            System.out.println("[DEBUG] AppController.save() - IOException: " + e.toString());
+        }
     }
 }
