@@ -344,6 +344,7 @@ public class App extends Application {
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
         currentLoc = table.getSelectionModel().getSelectedItem();
+        appController.seek(currentLoc.getElapsedTime());
     }
 
 }
