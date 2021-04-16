@@ -104,7 +104,7 @@ public class AppController {
      */
     public void seek() {
 
-        Optional<Localization> selectedOpt = app.getListview()
+        Optional<Localization> selectedOpt = app.getTable()
                 .getSelectionModel()
                 .getSelectedItems()
                 .stream()
