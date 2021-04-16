@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 // import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.geometry.Insets;
 import javafx.event.*;
 
@@ -51,6 +52,8 @@ public class App extends Application {
     private TableView<Localization> table;
 
     private Localization currentLoc;
+
+    private String nameVal = "Name";
 
     /**
      * JavaFX calls this before start()
@@ -89,6 +92,21 @@ public class App extends Application {
 
         var conceptCol = new TableColumn<Localization, String>("Concept");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
+        conceptCol.setCellFactory(column -> {
+            return new TableCell<Localization, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    if (item == null || empty) {
+                        setText(null);
+                    }
+                    else {
+                        //loc = getLocalizations();
+                        setText(item);
+                        nameVal = item;
+                    }
+                }
+            };
+        });
         
         conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
@@ -109,22 +127,26 @@ public class App extends Application {
             });
         timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
         //adding name column 
+        // let's make the Name column our Textview element
+
         var nameCol = new TableColumn<Localization, String>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
-        nameCol.setCellFactory(column -> {
-                return new TableCell<Localization, String>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        if (item == null || empty) {
-                            setText(null);
-                        }
-                        else {
-                            //loc = getLocalizations();
-                            setText(item);
-                        }
-                    }
-                };
-            });
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
+        // nameCol.setCellFactory(column -> {
+        //         return new TableCell<Localization, TextField>() {
+        //             @Override
+        //             protected void updateItem(TextField item, boolean empty) {
+        //                 if (item == null || empty) {
+        //                     setText(null);
+        //                 }
+        //                 else {
+        //                     //loc = getLocalizations();
+        //                     item.setText(nameVal);
+        //                 }
+        //             }
+        //         };
+        //     });
+        nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
+
         nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
         nameCol.setResizable(false); 
@@ -244,7 +266,7 @@ public class App extends Application {
         appController.initLocalizationComms(outgoingPort, incomingPort);
         IO io = appController.getIo();
 
-        var items = io.getController().getLocalizations();
+    var items = io.getController().getLocalizations();
         items.addListener((ListChangeListener.Change<? extends Localization> c) -> {
             System.out.println("Received: " + c);
             while (c.next()) {
