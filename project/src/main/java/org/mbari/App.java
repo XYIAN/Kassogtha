@@ -126,11 +126,22 @@ public class App extends Application {
                 };
             });
         timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+       
+       
         //adding name column 
         // let's make the Name column our Textview element
 
+        //TODO: This is what I need help with
+
+        /*
+            The intention is to remove one of the columns "name" or " concept"
+            For now "name" is supposed to hold the Textfield, but it hasn't been working
+            Below we can see a few different attempts, but nothing has worked so far.
+        */
         var nameCol = new TableColumn<Localization, String>("Name");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
+        nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
+
         // nameCol.setCellFactory(column -> {
         //         return new TableCell<Localization, TextField>() {
         //             @Override
@@ -145,7 +156,24 @@ public class App extends Application {
         //             }
         //         };
         //     });
-        nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
+
+
+        /* // This is code from the web, don't worry about this
+
+
+            TableColumn<Localization, String> nameCol = new TableColumn<>("Name");
+            nameCol.setMinWidth(60);
+            nameCol.setCellValueFactory(
+                new PropertyValueFactory("Name"));
+            nameCol.setCellFactory(cellFactory);
+            nameCol.setOnEditCommit((CellEditEvent<Localization, String> t) -> {
+                ((Localization) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setText(t.getConcept());
+            });
+        */
+
+
 
         nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
