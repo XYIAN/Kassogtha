@@ -216,6 +216,24 @@ public class App extends Application {
         search.setPromptText("Search");
         search.setMinWidth(220);
         search.setMinHeight(25);
+        table.getSelectionModel()
+            .selectedItemProperty()
+            .addListener((observable, oldValue, newValue) -> {
+                var text = newValue == null ? null : newValue.getConcept();
+                search.setText(text);
+            });
+        search.setOnAction(evt -> {
+            var newConcept = search.getText();
+            if (newConcept != null) {
+              var localization = table.getSelectionModel()
+                .getSelectedItem();
+              if (localization != null) {
+                  localization.setConcept(newConcept);
+                  appController.update(localization);
+              }
+            }
+        });
+
 
         final Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
