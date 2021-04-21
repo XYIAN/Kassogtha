@@ -53,7 +53,7 @@ public class App extends Application {
 
     private Localization currentLoc;
 
-    private String nameVal = "Name";
+    private String tempVal = "";
 
     /**
      * JavaFX calls this before start()
@@ -102,7 +102,6 @@ public class App extends Application {
                     else {
                         //loc = getLocalizations();
                         setText(item);
-                        nameVal = item;
                     }
                 }
             };
@@ -191,7 +190,15 @@ public class App extends Application {
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
                 rename.setText(text);
+                rename.selectAll();
+                tempVal = text;
             });
+
+        rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (isNowFocused && rename.getText().equals(tempVal)) {
+                rename.selectAll();
+            }
+        });
         rename.setOnAction(evt -> {
             var newConcept = rename.getText();
             if (newConcept != null) {
