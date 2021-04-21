@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 // import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.geometry.Insets;
 import javafx.event.*;
 
@@ -50,9 +51,9 @@ public class App extends Application {
 
     private TableView<Localization> table;
 
-    private ListView<Localization> listview;
-
     private Localization currentLoc;
+
+    private String nameVal = "Name";
 
     /**
      * JavaFX calls this before start()
@@ -66,12 +67,10 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
 
-
         // ------------------------------- Root --------------------------------------------
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10,10,10,10));
-
 
         // ------------------------------- Root --------------------------------------------
 
@@ -91,10 +90,25 @@ public class App extends Application {
         table = new TableView<Localization>();
         table.setEditable(false);
 
-        var conceptCol = new TableColumn<Localization, String>("Concept");
+        var conceptCol = new TableColumn<Localization, String>("Name");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
+        conceptCol.setCellFactory(column -> {
+            return new TableCell<Localization, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    if (item == null || empty) {
+                        setText(null);
+                    }
+                    else {
+                        //loc = getLocalizations();
+                        setText(item);
+                        nameVal = item;
+                    }
+                }
+            };
+        });
         
-        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.6));
 
         var timeCol = new TableColumn<Localization, Duration>("ElapsedTime");
         timeCol.setCellValueFactory(new PropertyValueFactory<Localization, Duration>("elapsedTime"));
@@ -107,92 +121,51 @@ public class App extends Application {
                         }
                         else {
                             setText(formatDuration(item));
-                        }
-                    }
-                };
-            });
-        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
-        //adding name column 
-        var nameCol = new TableColumn<Localization, String>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
-        nameCol.setCellFactory(column -> {
-                return new TableCell<Localization, String>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        if (item == null || empty) {
-                            setText(null);
-                        }
-                        else {
-                            //loc = getLocalizations();
-                            setText(item);
-                        }
-                    }
-                };
-            });
-        nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
-        nameCol.setResizable(false); 
+                        }
+                    }
+                };
+            });
+        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.4));
+       
+       
+        //adding name column 
+        // let's make the Name column our Textview element
+
+        //TODO: This is what I need help with
+
+        /*
+            The intention is to remove one of the columns "name" or " concept"
+            For now "name" is supposed to hold the Textfield, but it hasn't been working
+            Below we can see a few different attempts, but nothing has worked so far.
+        */
+        // var nameCol = new TableColumn<Localization, String>("Name");
+        // nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
+        // nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
+
+
+        // nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+
+        // nameCol.setResizable(false); 
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
-        table.getColumns().addAll(nameCol, conceptCol, timeCol);
+        // table.getColumns().addAll(nameCol, conceptCol, timeCol);
+        table.getColumns().addAll(conceptCol, timeCol);
         table.setMinWidth(470);
         
         // ------------------------------- Table Eventhandler--------------------------------------------
         
         
-        
-        
-        //pane.getChildren().add(table);
-        //table.setOnMouseClicked(new EventHandler<MouseEvent>()){
-            //edit name in here?
-        //};
         // ------------------------------- Table --------------------------------------------
 
-        // ------------------------------- ListView --------------------------------------------
-
-
-        // VBox vBox = new VBox();
-        // var sceneEmpty = new Scene(vBox, 480, 480);
         //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
 
-        StackPane pane = new StackPane();
-
-
-        // README: THe listview is redundant! It's showing the same info as the TableView. Move the
-        // seek button to just a single button in the UI (or you can try a popup on the tableview)
-        // The button can get the selected items from the table and seek to them
-
-        // ObservableList<Localization> list = FXCollections.observableArrayList("Item 1", "Item 2", "Item 3", "Item 4");
-        // listview = new ListView<>();
-
-        // listview.setCellFactory((Callback<ListView<Localization>, ListCell<Localization>>) new Callback<ListView<Localization>, ListCell<Localization>>() {
-        //     @Override
-        //     public ListCell<Localization> call(ListView<Localization> param) {
-        //         return new XCell(appController);
-        //     };
-        // });
-
-        // listview.setOnMouseClicked(new EventHandler<MouseEvent>(){
-        //     @Override
-        //     public void handle(MouseEvent event){
-        //         if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-        //             // event.getTarget().getChildren().setLabel("SOme new label");
-        //         }
-        //     }
-        // });
-
-        // listview.prefWidthProperty().bind(listview.widthProperty().multiply(1.5));
-        // listview.setMinWidth(200);
-        // pane.getChildren().add(listview);
 
         HBox hBox = new HBox(table);
 
         // HBox.setMargin(pane, new Insets(20,20,20,20));
         HBox.setMargin(table, new Insets(20,20,20,20));
-
-
-        // ------------------------------- ListView --------------------------------------------
 
 
         // ------------------------------- Top Menu --------------------------------------------
@@ -204,29 +177,31 @@ public class App extends Application {
         logoView.setFitHeight(70);
         logoView.setFitWidth(200);
         logoView.setImage(logo);
-        // logoView.setPreserveRatio(true);
         // // ----- Image -----
+
 
         // // ----- Search Bar -----
  
-        TextField search = new TextField();
-        search.setPromptText("Search");
-        search.setMinWidth(220);
-        search.setMinHeight(25);
+        TextField rename = new TextField();
+        rename.setPromptText("Rename");
+        rename.setMinWidth(220);
+        rename.setMinHeight(25);
         table.getSelectionModel()
             .selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
-                search.setText(text);
+                rename.setText(text);
             });
-        search.setOnAction(evt -> {
-            var newConcept = search.getText();
+        rename.setOnAction(evt -> {
+            var newConcept = rename.getText();
             if (newConcept != null) {
               var localization = table.getSelectionModel()
                 .getSelectedItem();
               if (localization != null) {
                   localization.setConcept(newConcept);
                   appController.update(localization);
+                  table.getColumns().get(0).setVisible(false);
+                  table.getColumns().get(0).setVisible(true);
               }
             }
         });
@@ -236,22 +211,18 @@ public class App extends Application {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinSize(10,1);
 
- 
- 
         // ----- Search Bar -----
 
-        HBox topHbox = new HBox(logoView, spacer,  search);//logoView,
-        HBox.setMargin(search, new Insets(30,20,20,20));
+        HBox topHbox = new HBox(logoView, spacer,  rename);//logoView,
+        HBox.setMargin(rename, new Insets(30,20,20,20));
         HBox.setMargin(logoView, new Insets(20,20,20,20));
 
-        
 
         // ------------------------------- Top Menu --------------------------------------------
 
         // ------------------------------- Bottom Buttons --------------------------------------------
 
         Button saveBtn = new Button("Save");
-
         saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event){
@@ -260,12 +231,15 @@ public class App extends Application {
         });
 
         Button downLoadBtn = new Button("Download");
+
         Button upLoadBtn = new Button("Upload");
+
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
 
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
+
         HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
@@ -276,12 +250,9 @@ public class App extends Application {
         
         // ------------------------------- Bottom Buttons --------------------------------------------
 
-
         root.setTop(topHbox);
         root.setCenter(hBox);
         root.setBottom(hButtonBox);
-        // VBox containerBox = new VBox(topHbox, hBox, hButtonBox);
-
 
         // ------------------------------- Stage --------------------------------------------
 
@@ -292,8 +263,7 @@ public class App extends Application {
         stage.setResizable(false);
         stage.show();
 
-        initComms(table, listview);
-
+        initComms(table);
 
         // ------------------------------- Stage --------------------------------------------
 
@@ -307,14 +277,14 @@ public class App extends Application {
                                 duration.toMillisPart());
     }
 
-    private void initComms(TableView<Localization> table,ListView<Localization> listview) {
+    private void initComms(TableView<Localization> table) {
 
         var incomingPort = 5561;   // ZeroMQ subscriber port
         var outgoingPort = 5562;   // ZeroMQ publisher port
         appController.initLocalizationComms(outgoingPort, incomingPort);
         IO io = appController.getIo();
 
-        var items = io.getController().getLocalizations();
+    var items = io.getController().getLocalizations();
         items.addListener((ListChangeListener.Change<? extends Localization> c) -> {
             System.out.println("Received: " + c);
             while (c.next()) {
@@ -333,17 +303,11 @@ public class App extends Application {
             }
         });
 
-
         table.setItems(items);
-        // listview.setItems(items);
     }
 
     public TableView<Localization> getTable() {
         return table;
-    }
-
-    public ListView<Localization> getListview() {
-        return listview;
     }
 
     public static void main(String[] args) {
@@ -351,11 +315,6 @@ public class App extends Application {
     }
 
     private void deleteRowFromTable(){
-        // table.getItems().removeAll(
-            // table.getSelectionModel().getSelectedItem()
-        // );
-// table.re
-        // table.getSelectionModel().getSelectedItem().
     }
 
     // after this function call the current location will be accessable
