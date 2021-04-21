@@ -90,7 +90,7 @@ public class App extends Application {
         table = new TableView<Localization>();
         table.setEditable(false);
 
-        var conceptCol = new TableColumn<Localization, String>("Concept");
+        var conceptCol = new TableColumn<Localization, String>("Name");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
         conceptCol.setCellFactory(column -> {
             return new TableCell<Localization, String>() {
@@ -108,7 +108,7 @@ public class App extends Application {
             };
         });
         
-        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+        conceptCol.prefWidthProperty().bind(table.widthProperty().multiply(0.6));
 
         var timeCol = new TableColumn<Localization, Duration>("ElapsedTime");
         timeCol.setCellValueFactory(new PropertyValueFactory<Localization, Duration>("elapsedTime"));
@@ -121,11 +121,12 @@ public class App extends Application {
                         }
                         else {
                             setText(formatDuration(item));
+
                         }
                     }
                 };
             });
-        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
+        timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.4));
        
        
         //adding name column 
@@ -138,50 +139,19 @@ public class App extends Application {
             For now "name" is supposed to hold the Textfield, but it hasn't been working
             Below we can see a few different attempts, but nothing has worked so far.
         */
-        var nameCol = new TableColumn<Localization, String>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
-        nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
-
-        // nameCol.setCellFactory(column -> {
-        //         return new TableCell<Localization, TextField>() {
-        //             @Override
-        //             protected void updateItem(TextField item, boolean empty) {
-        //                 if (item == null || empty) {
-        //                     setText(null);
-        //                 }
-        //                 else {
-        //                     //loc = getLocalizations();
-        //                     item.setText(nameVal);
-        //                 }
-        //             }
-        //         };
-        //     });
+        // var nameCol = new TableColumn<Localization, String>("Name");
+        // nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
+        // nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
 
 
-        /* // This is code from the web, don't worry about this
+        // nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
 
-
-            TableColumn<Localization, String> nameCol = new TableColumn<>("Name");
-            nameCol.setMinWidth(60);
-            nameCol.setCellValueFactory(
-                new PropertyValueFactory("Name"));
-            nameCol.setCellFactory(cellFactory);
-            nameCol.setOnEditCommit((CellEditEvent<Localization, String> t) -> {
-                ((Localization) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setText(t.getConcept());
-            });
-        */
-
-
-
-        nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
-
-        nameCol.setResizable(false); 
+        // nameCol.setResizable(false); 
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
-        table.getColumns().addAll(nameCol, conceptCol, timeCol);
+        // table.getColumns().addAll(nameCol, conceptCol, timeCol);
+        table.getColumns().addAll(conceptCol, timeCol);
         table.setMinWidth(470);
         
         // ------------------------------- Table Eventhandler--------------------------------------------
@@ -212,24 +182,26 @@ public class App extends Application {
 
         // // ----- Search Bar -----
  
-        TextField search = new TextField();
-        search.setPromptText("Search");
-        search.setMinWidth(220);
-        search.setMinHeight(25);
+        TextField rename = new TextField();
+        rename.setPromptText("Rename");
+        rename.setMinWidth(220);
+        rename.setMinHeight(25);
         table.getSelectionModel()
             .selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
-                search.setText(text);
+                rename.setText(text);
             });
-        search.setOnAction(evt -> {
-            var newConcept = search.getText();
+        rename.setOnAction(evt -> {
+            var newConcept = rename.getText();
             if (newConcept != null) {
               var localization = table.getSelectionModel()
                 .getSelectedItem();
               if (localization != null) {
                   localization.setConcept(newConcept);
                   appController.update(localization);
+                  table.getColumns().get(0).setVisible(false);
+                  table.getColumns().get(0).setVisible(true);
               }
             }
         });
@@ -241,8 +213,8 @@ public class App extends Application {
 
         // ----- Search Bar -----
 
-        HBox topHbox = new HBox(logoView, spacer,  search);//logoView,
-        HBox.setMargin(search, new Insets(30,20,20,20));
+        HBox topHbox = new HBox(logoView, spacer,  rename);//logoView,
+        HBox.setMargin(rename, new Insets(30,20,20,20));
         HBox.setMargin(logoView, new Insets(20,20,20,20));
 
 
