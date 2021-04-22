@@ -6,5 +6,6 @@ module org.mbari {
     requires vcr4j.sharktopoda;
     requires vcr4j.sharktopoda.client;
     requires com.google.gson;
+    requires okhttp;
     exports org.mbari;
 }

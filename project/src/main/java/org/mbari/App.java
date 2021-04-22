@@ -16,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+//import javafx.scene.control.Tooltip; 
+//import javafx.scene.control.ComboBox;
 import javafx.geometry.Insets;
 import javafx.event.*;
 
@@ -26,12 +28,19 @@ import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent; 
 import javafx.scene.image.Image;
+import javafx.stage.Window; 
+
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.Duration;
 import java.util.UUID;
+
+import java.util.stream.Stream; 
+
 
 import org.mbari.vcr4j.VideoIO;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;

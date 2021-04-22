@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -135,5 +136,11 @@ public class AppController {
         catch (IOException e){
             System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
         }
+    }
+
+    public void auto(input){
+        //convert JSON concept list to string array 
+        var gson = new Gson();
+        var concepts = gson.fromJson(stringOfJson, String[].class)
     }
 }
