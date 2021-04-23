@@ -8,7 +8,7 @@ import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -147,20 +147,15 @@ public class AppController {
         //File conceptList = new File 
         List<String> conceptList = new ArrayList<>();
         var url = getClass().getResource("/concepts.json");
-        BufferedReader reader = null; 
-        try{
-            var t = url.openStream(); 
-            reader = new BufferedReader(new InputStreamReader(t));
+        //BufferedReader reader = null; 
+        try(var reader = new BufferedReader(new InputStreamReader(url.openStream()))){
             String line; 
             while((line = reader.readLine()) != null){
                 conceptList.add(line); 
             }
         } catch(IOException e){
             e.printStackTrace(); 
-        } finally {
-            if(reader != null)
-            reader.close(); 
-        }
+        } 
         log.debug("concept to convert::::-->", conceptList);
 
         //convert JSON concept list to string array 
@@ -168,7 +163,7 @@ public class AppController {
         //var concepts = gson.fromJson(stringOfJson, String[].class);
         //var concepts = gson.fromJson(conceptList, String[].class);
     }
-    /*
+    
     @param <T>
     public class conceptAuto<T>{
         private ComboBox<T> cmb;
@@ -224,5 +219,4 @@ public class AppController {
         }
     
     }//end autoComplet
-*/
 }
