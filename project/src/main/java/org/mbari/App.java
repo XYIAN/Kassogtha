@@ -325,7 +325,14 @@ public class App extends Application {
 
     private void deleteRowFromTable(){
     }
-
+/*
+    public void autoComplete(){
+        var gson = new Gson();
+        var concepts = gson.fromJson(stringOfJson, String[].class);
+        //handle listener 
+        items.addListener 
+    }
+*/
     // after this function call the current location will be accessable
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));

@@ -138,9 +138,12 @@ public class AppController {
         }
     }
 
-    public void auto(input){
+    public void auto(Localization loc){
+        //var conceptJson = io.getController().getLocalizations();
+        var conceptJson = io.getController().getConcept();
         //convert JSON concept list to string array 
-        var gson = new Gson();
-        var concepts = gson.fromJson(stringOfJson, String[].class)
+        Gson gson = new GsonBuilder();
+        //var concepts = gson.fromJson(stringOfJson, String[].class);
+        var concepts = gson.fromJson(conceptJson, String[].class);
     }
 }
