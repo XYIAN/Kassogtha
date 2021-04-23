@@ -8,6 +8,7 @@ import org.mbari.vcr4j.sharktopoda.client.localization.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -118,7 +119,7 @@ public class AppController {
         io.getController().addLocalization(localization);
     }
 
-    public void save() {
+    public void save(File fileToSave) {
         var xs = new ArrayList<Localization>(io.getController().getLocalizations());
         Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -128,7 +129,8 @@ public class AppController {
         try {
             Date date = new Date() ;
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss") ;
-            var writer = new java.io.FileWriter(simpleDateFormat.format(date) + ".json");
+//            var writer = new java.io.FileWriter(simpleDateFormat.format(date) + ".json");
+            var writer = new java.io.FileWriter(fileToSave);
             writer.write(json);
             writer.close();
         }

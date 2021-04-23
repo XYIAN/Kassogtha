@@ -27,9 +27,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -223,10 +226,15 @@ public class App extends Application {
         // ------------------------------- Bottom Buttons --------------------------------------------
 
         Button saveBtn = new Button("Save");
+
         saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event){
-                appController.save();
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+                File fileToSave = fileChooser.showSaveDialog(null);
+                appController.save(fileToSave);
             }
         });
 
