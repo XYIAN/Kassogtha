@@ -182,7 +182,6 @@ public class App extends Application {
         logoView.setImage(logo);
         // // ----- Image -----
 
-
         // // ----- Search Bar -----
  
         TextField rename = new TextField();
@@ -209,7 +208,6 @@ public class App extends Application {
             }
         });
 
-
         final Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinSize(10,1);
@@ -226,13 +224,14 @@ public class App extends Application {
         // ------------------------------- Bottom Buttons --------------------------------------------
 
         Button saveBtn = new Button("Save");
-
         saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event){
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Save");
                 fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.txt", "*.txt"));
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.json", "*.json"));
                 File fileToSave = fileChooser.showSaveDialog(null);
                 appController.save(fileToSave);
             }
@@ -241,15 +240,22 @@ public class App extends Application {
         Button downLoadBtn = new Button("Download");
 
         Button upLoadBtn = new Button("Upload");
+        upLoadBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Upload");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.json", "*.json"));
+                File fileToUpload = fileChooser.showOpenDialog(null);
+                appController.upload(fileToUpload);
+            }
+        });
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
-
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
-
         HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
-        
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
         HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
         HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
@@ -270,7 +276,6 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-
         initComms(table);
 
         // ------------------------------- Stage --------------------------------------------
@@ -310,7 +315,6 @@ public class App extends Application {
                 }
             }
         });
-
         table.setItems(items);
     }
 
@@ -331,5 +335,4 @@ public class App extends Application {
         currentLoc = table.getSelectionModel().getSelectedItem();
         appController.seek(currentLoc.getElapsedTime());
     }
-
 }

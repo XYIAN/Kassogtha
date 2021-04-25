@@ -16,24 +16,20 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class AppController {
-
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
-
     private final EventBus eventBus = new EventBus();
-
     private IO io;
-
     private SharktopodaVideoIO videoIo;
-
     private final App app;
-
     public AppController(App app) {
         this.app = app;
     }
@@ -54,7 +50,6 @@ public class AppController {
             io = new IO(inport, outport, "localization", "localization");
         }
     }
-
 
     /**
      * Initializes control communications
@@ -84,11 +79,9 @@ public class AppController {
     public EventBus getEventBus() {
         return eventBus;
     }
-
     public IO getIo() {
         return io;
     }
-
     public SharktopodaVideoIO getVideoIo() {
         return videoIo;
     }
@@ -128,7 +121,7 @@ public class AppController {
         String json = gson.toJson(xs);
         try {
             Date date = new Date() ;
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss") ;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 //            var writer = new java.io.FileWriter(simpleDateFormat.format(date) + ".json");
             var writer = new java.io.FileWriter(fileToSave);
             writer.write(json);
@@ -136,6 +129,24 @@ public class AppController {
         }
         catch (IOException e){
             System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
+        }
+    }
+
+    public void upload(File fileToUpload) {
+        try {
+            var reader = new java.io.FileReader(fileToUpload);
+            Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                .registerTypeAdapter(Duration.class, new DurationConverter())
+                .create();
+            ArrayList<Localization> localizationsList = gson.fromJson(reader, new TypeToken<List<Localization>>(){}.getType());
+            for (int i = 0; i < localizationsList.size(); i++) {
+                io.getController().addLocalization(localizationsList.get(i));
+            }
+            reader.close();
+        }
+        catch (IOException e){
+            System.out.println("[ERROR] AppController.upload() - IOException: " + e.toString());
         }
     }
 }
