@@ -31,12 +31,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent; 
 import javafx.scene.image.Image;
-import javafx.stage.Window; 
-
+import javafx.stage.Window;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import java.util.stream.Stream; 
@@ -64,6 +66,8 @@ public class App extends Application {
 
     private String tempVal = "";
 
+    private List<String> conceptList;
+
     /**
      * JavaFX calls this before start()
      */
@@ -75,6 +79,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        // initialize the conceptList with MBARI's doc
+        conceptList = appController.getAutoFillStrings("concepts.json");
+        for (String concept: conceptList){
+            System.out.println(concept);
+        }
 
         // ------------------------------- Root --------------------------------------------
 
@@ -249,6 +259,13 @@ public class App extends Application {
         Button downLoadBtn = new Button("Download");
 
         Button upLoadBtn = new Button("Upload");
+        upLoadBtn.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Json Concept File");
+            fileChooser.showOpenDialog(stage);
+    
+
+        });
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
