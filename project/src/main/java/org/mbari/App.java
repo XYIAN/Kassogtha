@@ -242,7 +242,8 @@ public class App extends Application {
         HBox topHbox = new HBox(logoView, spacer,  rename);//logoView,
         HBox.setMargin(rename, new Insets(30,20,20,20));
         HBox.setMargin(logoView, new Insets(20,20,20,20));
-
+        // testing 
+        //ComboBox autoT = new ComboBox(); 
 
         // ------------------------------- Top Menu --------------------------------------------
 
