@@ -122,6 +122,12 @@ public class AppController {
         io.getController().addLocalization(localization);
     }
 
+
+    public void delete(Localization localization) {
+        io.getController().removeLocalization(localization.getLocalizationUuid());
+    }
+
+
     public void save() {
         var xs = new ArrayList<Localization>(io.getController().getLocalizations());
         Gson gson = new GsonBuilder()
@@ -141,27 +147,6 @@ public class AppController {
         }
     }
 
-
-    // the idea here is to simply set up the origin of the concept autocompletes
-    // We will feed getAutoFillStrings the name of the jasonObject to fill in the list of strings
-    public List<String> getAutoFillStrings(String conceptJasonDoc){
-        List<String> conceptList = new ArrayList<>();
-        var url = getClass().getResource("/" + conceptJasonDoc);
-        try(var reader = new BufferedReader(new InputStreamReader(url.openStream()))){
-            String line; 
-            while((line = reader.readLine()) != null){
-                if(line.length() > 1){
-                    line = line.replaceAll("\"", ""); 
-                }
-                conceptList.add(line); 
-            }
-            return conceptList;
-
-        } catch(IOException e){
-            e.printStackTrace(); 
-        } 
-        return new ArrayList<>();
-    }
 
 
     public void auto(Localization loc){
@@ -195,7 +180,36 @@ public class AppController {
         //var concepts = gson.fromJson(stringOfJson, String[].class);
         //var concepts = gson.fromJson(conceptList, String[].class);
     }
+
+
+
+
+
+
+
+    // the idea here is to simply set up the origin of the concept autocompletes
+    // We will feed getAutoFillStrings the name of the jasonObject to fill in the list of strings
+    public List<String> getAutoFillStrings(String conceptJasonDoc){
+        List<String> conceptList = new ArrayList<>();
+        var url = getClass().getResource("/" + conceptJasonDoc);
+        try(var reader = new BufferedReader(new InputStreamReader(url.openStream()))){
+            String line; 
+            while((line = reader.readLine()) != null){
+                if(line.length() > 1){
+                    line = line.replaceAll("\"", ""); 
+                }
+                conceptList.add(line); 
+            }
+            return conceptList;
+
+        } catch(IOException e){
+            e.printStackTrace(); 
+        } 
+        return new ArrayList<>();
+    }
     
+
+
     // @param <T>
     // public class conceptAuto<T>{
     //     private ComboBox<T> cmb;

@@ -348,6 +348,9 @@ public class App extends Application {
     }
 
     private void deleteRowFromTable(){
+        currentLoc = table.getSelectionModel().getSelectedItem();
+        appController.delete(currentLoc);
+
     }
 /*
     public void autoComplete(){
