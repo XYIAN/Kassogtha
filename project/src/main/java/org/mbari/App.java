@@ -241,9 +241,29 @@ public class App extends Application {
         spacer.setMinSize(10,1);
 
         // ----- Search Bar -----
+        Button upLoaconceptUpdBtn = new Button("Upload Concepts");
+        upLoaconceptUpdBtn.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Json Concept File");
+            fileChooser.setInitialFileName("new_concepts.json");
 
-        HBox topHbox = new HBox(logoView, spacer,  rename);//logoView,
-        HBox.setMargin(rename, new Insets(30,20,20,20));
+            // limit the type of files that are allowed to be uploaded
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JSON file", "*.json")
+            );
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if(selectedFile != null){
+                appController.uploadConcepts(selectedFile);
+            }
+           
+        });
+
+        VBox renameBox = new VBox(rename, upLoaconceptUpdBtn);
+        VBox.setMargin(rename, new Insets(10,20,20,10));
+        VBox.setMargin(upLoaconceptUpdBtn, new Insets(10,10,10,10));
+
+
+        HBox topHbox = new HBox(logoView, spacer,  renameBox);//logoView,
         HBox.setMargin(logoView, new Insets(20,20,20,20));
 
 
@@ -263,22 +283,7 @@ public class App extends Application {
 
         // this button should encompass both upload functionalites, both for the autocomplete and the Localizations
         Button upLoadBtn = new Button("Upload");
-        upLoadBtn.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Json Concept File");
-            fileChooser.setInitialFileName("new_concepts.json");
-
-            // limit the type of files that are allowed to be uploaded
-            fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("JSON file", "*.json")
-            );
-            File selectedFile = fileChooser.showOpenDialog(stage);
-            if(selectedFile != null){
-                appController.uploadConcepts(selectedFile);
-            }
-
-           
-        });
+       
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
