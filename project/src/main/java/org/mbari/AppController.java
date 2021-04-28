@@ -1,6 +1,8 @@
 package org.mbari;
 
+import org.mbari.vcr4j.VideoIO;
 import org.mbari.vcr4j.commands.SeekElapsedTimeCmd;
+import org.mbari.vcr4j.commands.VideoCommands;
 import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
 import org.mbari.vcr4j.sharktopoda.client.gson.DurationConverter;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
@@ -13,6 +15,9 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,12 +29,15 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class AppController {
 
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
-    private final EventBus eventBus = new EventBus();
+    // private final EventBus eventBus = new EventBus();
 
     private IO io;
 
@@ -84,9 +92,9 @@ public class AppController {
         }
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
+    // public EventBus getEventBus() {
+    //     return eventBus;
+    // }
 
     public IO getIo() {
         return io;
@@ -147,44 +155,64 @@ public class AppController {
         }
     }
 
-
-
-    public void auto(Localization loc){
-        //Path conceptList = Paths.get("/home/xyian/dev/Kassogtha/project/src/main/resources/concepts.json");
-        //var conceptJson = "/home/xyian/dev/Kassogtha/project/src/main/resources/concepts.json";
-        //var conceptJson = io.getController().getConcept();
-        //log.debug("concept to convert::::-->", conceptJson);
-        //File conceptList = new File 
-        List<String> conceptList = new ArrayList<>();
-        var url = getClass().getResource("/concepts.json");
-        //BufferedReader reader = null; 
-        try(var reader = new BufferedReader(new InputStreamReader(url.openStream()))){
-            String line; 
-            while((line = reader.readLine()) != null){
-                if(line.length() > 1){
-                    line = line.replaceAll("\"", ""); 
-                }
-                log.debug(line);
-                conceptList.add(line); 
-            }
-            for (String concept: conceptList){
-                System.out.println(concept);
-            }
-            log.debug("concept to convert::::-->", conceptList.toString());
-        } catch(IOException e){
-            e.printStackTrace(); 
-        } 
-
-        //convert JSON concept list to string array 
-        //Gson gson = new GsonBuilder();
-        //var concepts = gson.fromJson(stringOfJson, String[].class);
-        //var concepts = gson.fromJson(conceptList, String[].class);
+    public void play(){
+        if(videoIo != null){
+            videoIo.send(VideoCommands.PLAY);
+        }
     }
 
 
+    public void uploadConcepts(File fileToUpload) {
+        var path = Paths.get(fileToUpload.getPath());
+        var dir = "src/main/resources";
+        String json;
+        Gson gson = new GsonBuilder()
+        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        .registerTypeAdapter(Duration.class, new DurationConverter())
+        .create(); 
+        try {
+            json = Files.readString(path, StandardCharsets.UTF_8);
+            var writer = new java.io.FileWriter(new File(dir,"new_concepts.json"));
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       
+    }
 
 
+    // public void auto(Localization loc){
+    //     //Path conceptList = Paths.get("/home/xyian/dev/Kassogtha/project/src/main/resources/concepts.json");
+    //     //var conceptJson = "/home/xyian/dev/Kassogtha/project/src/main/resources/concepts.json";
+    //     //var conceptJson = io.getController().getConcept();
+    //     //log.debug("concept to convert::::-->", conceptJson);
+    //     //File conceptList = new File 
+    //     List<String> conceptList = new ArrayList<>();
+    //     var url = getClass().getResource("/concepts.json");
+    //     //BufferedReader reader = null; 
+    //     try(var reader = new BufferedReader(new InputStreamReader(url.openStream()))){
+    //         String line; 
+    //         while((line = reader.readLine()) != null){
+    //             if(line.length() > 1){
+    //                 line = line.replaceAll("\"", ""); 
+    //             }
+    //             log.debug(line);
+    //             conceptList.add(line); 
+    //         }
+    //         for (String concept: conceptList){
+    //             System.out.println(concept);
+    //         }
+    //         log.debug("concept to convert::::-->", conceptList.toString());
+    //     } catch(IOException e){
+    //         e.printStackTrace(); 
+    //     } 
 
+    //     //convert JSON concept list to string array 
+    //     //Gson gson = new GsonBuilder();
+    //     //var concepts = gson.fromJson(stringOfJson, String[].class);
+    //     //var concepts = gson.fromJson(conceptList, String[].class);
+    // }
 
 
     // the idea here is to simply set up the origin of the concept autocompletes
@@ -197,8 +225,12 @@ public class AppController {
             while((line = reader.readLine()) != null){
                 if(line.length() > 1){
                     line = line.replaceAll("\"", ""); 
+                    line = line.replaceAll(",", ""); 
+                    line = line.trim();
                 }
-                conceptList.add(line); 
+                if(line.length() > 1){
+                    conceptList.add(line); 
+                }
             }
             return conceptList;
 
@@ -208,61 +240,4 @@ public class AppController {
         return new ArrayList<>();
     }
     
-
-
-    // @param <T>
-    // public class conceptAuto<T>{
-    //     private ComboBox<T> cmb;
-    //     String filter = "";
-    //     private ObservableList<T> originalItems;
-    
-    //     public ComboBoxAutoComplete(ComboBox<T> cmb) {
-    //         this.cmb = cmb;
-    //         originalItems = FXCollections.observableArrayList(cmb.getItems());
-    //         cmb.setTooltip(new Tooltip());
-    //         cmb.setOnKeyPressed(this::handleOnKeyPressed);
-    //         cmb.setOnHidden(this::handleOnHiding);
-    //         return; 
-    //     }
-    
-    //     public void handleOnKeyPressed(KeyEvent e) {
-    //         ObservableList<T> filteredList = FXCollections.observableArrayList();
-    //         KeyCode code = e.getCode();
-    
-    //         if (code.isLetterKey()) {
-    //             filter += e.getText();
-    //         }
-    //         if (code == KeyCode.BACK_SPACE && filter.length() > 0) {
-    //             filter = filter.substring(0, filter.length() - 1);
-    //             cmb.getItems().setAll(originalItems);
-    //         }
-    //         if (code == KeyCode.ESCAPE) {
-    //             filter = "";
-    //         }
-    //         if (filter.length() == 0) {
-    //             filteredList = originalItems;
-    //             cmb.getTooltip().hide();
-    //         } else {
-    //             Stream<T> itens = cmb.getItems().stream();
-    //             String txtUsr = filter.toString().toLowerCase();
-    //             itens.filter(el -> el.toString().toLowerCase().contains(txtUsr)).forEach(filteredList::add);
-    //             cmb.getTooltip().setText(txtUsr);
-    //             Window stage = cmb.getScene().getWindow();
-    //             double posX = stage.getX() + cmb.getBoundsInParent().getMinX();
-    //             double posY = stage.getY() + cmb.getBoundsInParent().getMinY();
-    //             cmb.getTooltip().show(stage, posX, posY);
-    //             cmb.show();
-    //         }
-    //         cmb.getItems().setAll(filteredList);
-    //     }
-    
-    //     public void handleOnHiding(Event e) {
-    //         filter = "";
-    //         cmb.getTooltip().hide();
-    //         T s = cmb.getSelectionModel().getSelectedItem();
-    //         cmb.getItems().setAll(originalItems);
-    //         cmb.getSelectionModel().select(s);
-    //     }
-    
-    // }//end autoComplet
 }

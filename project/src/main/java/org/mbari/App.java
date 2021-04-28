@@ -36,6 +36,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -63,8 +66,6 @@ public class App extends Application {
     private TableView<Localization> table;
 
     private Localization currentLoc;
-
-    private String tempVal = "";
 
     private List<String> conceptList;
 
@@ -145,26 +146,6 @@ public class App extends Application {
                 };
             });
         timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.4));
-       
-       
-        //adding name column 
-        // let's make the Name column our Textview element
-
-        //TODO: This is what I need help with
-
-        /*
-            The intention is to remove one of the columns "name" or " concept"
-            For now "name" is supposed to hold the Textfield, but it hasn't been working
-            Below we can see a few different attempts, but nothing has worked so far.
-        */
-        // var nameCol = new TableColumn<Localization, String>("Name");
-        // nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
-        // nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
-
-
-        // nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
-
-        // nameCol.setResizable(false); 
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
@@ -177,12 +158,9 @@ public class App extends Application {
         
         // ------------------------------- Table --------------------------------------------
 
-        //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
-
 
         HBox hBox = new HBox(table);
 
-        // HBox.setMargin(pane, new Insets(20,20,20,20));
         HBox.setMargin(table, new Insets(20,20,20,20));
 
 
@@ -198,28 +176,18 @@ public class App extends Application {
         // // ----- Image -----
 
 
-        // // ----- Search Bar -----
- 
-        TextField rename = new TextField();
-        rename.setPromptText("Rename");
-        rename.setMinWidth(220);
-        rename.setMinHeight(25);
-        table.getSelectionModel()
-            .selectedItemProperty()
-            .addListener((observable, oldValue, newValue) -> {
-                var text = newValue == null ? null : newValue.getConcept();
-                rename.setText(text);
-                rename.selectAll();
-                tempVal = text;
-            });
+        // // ----- Rename Combobox -----
 
-        rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (isNowFocused && rename.getText().equals(tempVal)) {
-                rename.selectAll();
-            }
-        });
+        ComboBox<String> rename = new ComboBox<>();
+        new FilteredComboBoxDecorator<>(rename, FilteredComboBoxDecorator.STARTSWITH_IGNORE_SPACES);
+        rename.setItems(FXCollections.observableArrayList(conceptList));
+
+        rename.setPromptText("Rename");
+        rename.setMaxWidth(200);
+        rename.setMinHeight(25);
+
         rename.setOnAction(evt -> {
-            var newConcept = rename.getText();
+            var newConcept = rename.getValue();
             if (newConcept != null) {
               var localization = table.getSelectionModel()
                 .getSelectedItem();
@@ -233,14 +201,38 @@ public class App extends Application {
         });
 
 
+
         final Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinSize(10,1);
 
-        // ----- Search Bar -----
+        // ----- Rename ComboBox -----
 
-        HBox topHbox = new HBox(logoView, spacer,  rename);//logoView,
-        HBox.setMargin(rename, new Insets(30,20,20,20));
+        Button upLoaconceptUpdBtn = new Button("Upload Concepts");
+        upLoaconceptUpdBtn.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Json Concept File");
+            fileChooser.setInitialFileName("new_concepts.json");
+
+            // limit the type of files that are allowed to be uploaded
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JSON file", "*.json")
+            );
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if(selectedFile != null){
+                appController.uploadConcepts(selectedFile);
+                conceptList = appController.getAutoFillStrings("new_concepts.json");
+                rename.setItems(FXCollections.observableArrayList(conceptList));
+            }
+           
+        });
+
+        VBox renameBox = new VBox(rename, upLoaconceptUpdBtn);
+        VBox.setMargin(rename, new Insets(20,20,0,20));
+        VBox.setMargin(upLoaconceptUpdBtn, new Insets(10,20,10,20));
+
+
+        HBox topHbox = new HBox(logoView, spacer,  renameBox);//logoView,
         HBox.setMargin(logoView, new Insets(20,20,20,20));
 
 
@@ -258,14 +250,10 @@ public class App extends Application {
 
         Button downLoadBtn = new Button("Download");
 
-        Button upLoadBtn = new Button("Upload");
-        upLoadBtn.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Json Concept File");
-            fileChooser.showOpenDialog(stage);
-    
-
-        });
+        // this button should encompass both upload functionalites, both for the autocomplete and the Localizations
+        Button playBtn = new Button("Play");
+        playBtn.setOnAction(e -> appController.play());
+       
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
@@ -273,11 +261,11 @@ public class App extends Application {
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
 
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
+        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, clearBtn, seekBtn, playBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
         HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
-        HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
+        HBox.setMargin(playBtn, new Insets(20,20,20,20));
         HBox.setMargin(clearBtn, new Insets(20,20,20,20));
         HBox.setMargin(seekBtn, new Insets(20,20,20,20));
         
@@ -352,14 +340,7 @@ public class App extends Application {
         appController.delete(currentLoc);
 
     }
-/*
-    public void autoComplete(){
-        var gson = new Gson();
-        var concepts = gson.fromJson(stringOfJson, String[].class);
-        //handle listener 
-        items.addListener 
-    }
-*/
+    
     // after this function call the current location will be accessable
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
