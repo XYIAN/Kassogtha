@@ -274,7 +274,7 @@ public class App extends Application {
             );
             File selectedFile = fileChooser.showOpenDialog(stage);
             if(selectedFile != null){
-                appController.upload(selectedFile);
+                appController.uploadConcepts(selectedFile);
             }
 
            

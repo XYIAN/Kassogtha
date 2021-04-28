@@ -151,7 +151,7 @@ public class AppController {
     }
 
 
-    public void upload(File fileToUpload) {
+    public void uploadConcepts(File fileToUpload) {
            
         File dir = new File("/home/federico/Capstone/Kassogtha/project/src/main/resources");
         String title = "newConcept.json";
