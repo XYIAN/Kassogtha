@@ -231,8 +231,11 @@ public class AppController {
             while((line = reader.readLine()) != null){
                 if(line.length() > 1){
                     line = line.replaceAll("\"", ""); 
+                    line = line.replaceAll(",", ""); 
                 }
-                conceptList.add(line); 
+                if(line.length() > 1){
+                    conceptList.add(line); 
+                }
             }
             return conceptList;
 

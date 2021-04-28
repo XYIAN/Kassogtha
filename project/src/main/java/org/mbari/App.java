@@ -203,7 +203,42 @@ public class App extends Application {
 
         // // ----- Search Bar -----
  
-        TextField rename = new TextField();
+        // TextField rename = new TextField();
+        // rename.setPromptText("Rename");
+        // rename.setMinWidth(220);
+        // rename.setMinHeight(25);
+        // table.getSelectionModel()
+        //     .selectedItemProperty()
+        //     .addListener((observable, oldValue, newValue) -> {
+        //         var text = newValue == null ? null : newValue.getConcept();
+        //         rename.setText(text);
+        //         rename.selectAll();
+        //         tempVal = text;
+        //     });
+
+        // rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        //     if (isNowFocused && rename.getText().equals(tempVal)) {
+        //         rename.selectAll();
+        //     }
+        // });
+        // rename.setOnAction(evt -> {
+        //     var newConcept = rename.getText();
+        //     if (newConcept != null) {
+        //       var localization = table.getSelectionModel()
+        //         .getSelectedItem();
+        //       if (localization != null) {
+        //           localization.setConcept(newConcept);
+        //           appController.update(localization);
+        //           table.getColumns().get(0).setVisible(false);
+        //           table.getColumns().get(0).setVisible(true);
+        //       }
+        //     }
+        // });
+
+        ComboBox<String> rename = new ComboBox<>();
+        new FilteredComboBoxDecorator<>(rename, FilteredComboBoxDecorator.STARTSWITH_IGNORE_SPACES);
+        rename.setItems(FXCollections.observableArrayList(conceptList));
+
         rename.setPromptText("Rename");
         rename.setMinWidth(220);
         rename.setMinHeight(25);
@@ -211,18 +246,18 @@ public class App extends Application {
             .selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
-                rename.setText(text);
-                rename.selectAll();
+                rename.setAccessibleText(text);;
+                // rename.selectAll();
                 tempVal = text;
             });
 
-        rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (isNowFocused && rename.getText().equals(tempVal)) {
-                rename.selectAll();
-            }
-        });
+        // rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        //     if (isNowFocused && rename.getAccessibleText().equals(tempVal)) {
+        //         //not sure
+        //     }
+        // });
         rename.setOnAction(evt -> {
-            var newConcept = rename.getText();
+            var newConcept = rename.getAccessibleText();
             if (newConcept != null) {
               var localization = table.getSelectionModel()
                 .getSelectedItem();
@@ -234,6 +269,7 @@ public class App extends Application {
               }
             }
         });
+
 
 
         final Pane spacer = new Pane();
