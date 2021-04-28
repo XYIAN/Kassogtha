@@ -16,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+//import javafx.scene.control.Tooltip; 
+//import javafx.scene.control.ComboBox;
 import javafx.geometry.Insets;
 import javafx.event.*;
 
@@ -26,12 +28,21 @@ import javafx.scene.layout.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent; 
 import javafx.scene.image.Image;
+import javafx.stage.Window;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+
+import java.util.stream.Stream; 
+
 
 import org.mbari.vcr4j.VideoIO;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
@@ -53,7 +64,9 @@ public class App extends Application {
 
     private Localization currentLoc;
 
-    private String nameVal = "Name";
+    private String tempVal = "";
+
+    private List<String> conceptList;
 
     /**
      * JavaFX calls this before start()
@@ -66,6 +79,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        // initialize the conceptList with MBARI's doc
+        conceptList = appController.getAutoFillStrings("concepts.json");
+        for (String concept: conceptList){
+            System.out.println(concept);
+        }
 
         // ------------------------------- Root --------------------------------------------
 
@@ -102,7 +121,6 @@ public class App extends Application {
                     else {
                         //loc = getLocalizations();
                         setText(item);
-                        nameVal = item;
                     }
                 }
             };
@@ -191,7 +209,15 @@ public class App extends Application {
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
                 rename.setText(text);
+                rename.selectAll();
+                tempVal = text;
             });
+
+        rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (isNowFocused && rename.getText().equals(tempVal)) {
+                rename.selectAll();
+            }
+        });
         rename.setOnAction(evt -> {
             var newConcept = rename.getText();
             if (newConcept != null) {
@@ -233,6 +259,13 @@ public class App extends Application {
         Button downLoadBtn = new Button("Download");
 
         Button upLoadBtn = new Button("Upload");
+        upLoadBtn.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Json Concept File");
+            fileChooser.showOpenDialog(stage);
+    
+
+        });
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
@@ -315,8 +348,18 @@ public class App extends Application {
     }
 
     private void deleteRowFromTable(){
-    }
+        currentLoc = table.getSelectionModel().getSelectedItem();
+        appController.delete(currentLoc);
 
+    }
+/*
+    public void autoComplete(){
+        var gson = new Gson();
+        var concepts = gson.fromJson(stringOfJson, String[].class);
+        //handle listener 
+        items.addListener 
+    }
+*/
     // after this function call the current location will be accessable
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
