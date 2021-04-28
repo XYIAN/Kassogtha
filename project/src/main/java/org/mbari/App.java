@@ -282,7 +282,8 @@ public class App extends Application {
         Button downLoadBtn = new Button("Download");
 
         // this button should encompass both upload functionalites, both for the autocomplete and the Localizations
-        Button upLoadBtn = new Button("Upload");
+        Button playBtn = new Button("Play");
+        playBtn.setOnAction(e -> appController.play());
        
 
         Button clearBtn = new Button("Delete");
@@ -291,11 +292,11 @@ public class App extends Application {
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
 
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, upLoadBtn, clearBtn, seekBtn);
+        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, clearBtn, seekBtn, playBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
         HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
-        HBox.setMargin(upLoadBtn, new Insets(20,20,20,20));
+        HBox.setMargin(playBtn, new Insets(20,20,20,20));
         HBox.setMargin(clearBtn, new Insets(20,20,20,20));
         HBox.setMargin(seekBtn, new Insets(20,20,20,20));
         

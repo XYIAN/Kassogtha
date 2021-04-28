@@ -1,6 +1,8 @@
 package org.mbari;
 
+import org.mbari.vcr4j.VideoIO;
 import org.mbari.vcr4j.commands.SeekElapsedTimeCmd;
+import org.mbari.vcr4j.commands.VideoCommands;
 import org.mbari.vcr4j.sharktopoda.SharktopodaVideoIO;
 import org.mbari.vcr4j.sharktopoda.client.gson.DurationConverter;
 import org.mbari.vcr4j.sharktopoda.client.localization.IO;
@@ -147,6 +149,12 @@ public class AppController {
         }
         catch (IOException e){
             System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
+        }
+    }
+
+    public void play(){
+        if(videoIo != null){
+            videoIo.send(VideoCommands.PLAY);
         }
     }
 
