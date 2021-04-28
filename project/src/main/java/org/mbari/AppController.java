@@ -232,6 +232,7 @@ public class AppController {
                 if(line.length() > 1){
                     line = line.replaceAll("\"", ""); 
                     line = line.replaceAll(",", ""); 
+                    line = line.trim();
                 }
                 if(line.length() > 1){
                     conceptList.add(line); 

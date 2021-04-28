@@ -67,8 +67,6 @@ public class App extends Application {
 
     private Localization currentLoc;
 
-    private String tempVal = "";
-
     private List<String> conceptList;
 
     /**
@@ -148,26 +146,6 @@ public class App extends Application {
                 };
             });
         timeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.4));
-       
-       
-        //adding name column 
-        // let's make the Name column our Textview element
-
-        //TODO: This is what I need help with
-
-        /*
-            The intention is to remove one of the columns "name" or " concept"
-            For now "name" is supposed to hold the Textfield, but it hasn't been working
-            Below we can see a few different attempts, but nothing has worked so far.
-        */
-        // var nameCol = new TableColumn<Localization, String>("Name");
-        // nameCol.setCellValueFactory(new PropertyValueFactory<>("concept"));
-        // nameCol.setCellFactory(TextFieldTableCell.<Localization>forTableColumn());
-
-
-        // nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.333));
-
-        // nameCol.setResizable(false); 
         conceptCol.setResizable(false);
         timeCol.setResizable(false);
 
@@ -201,39 +179,7 @@ public class App extends Application {
         // // ----- Image -----
 
 
-        // // ----- Search Bar -----
- 
-        // TextField rename = new TextField();
-        // rename.setPromptText("Rename");
-        // rename.setMinWidth(220);
-        // rename.setMinHeight(25);
-        // table.getSelectionModel()
-        //     .selectedItemProperty()
-        //     .addListener((observable, oldValue, newValue) -> {
-        //         var text = newValue == null ? null : newValue.getConcept();
-        //         rename.setText(text);
-        //         rename.selectAll();
-        //         tempVal = text;
-        //     });
-
-        // rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-        //     if (isNowFocused && rename.getText().equals(tempVal)) {
-        //         rename.selectAll();
-        //     }
-        // });
-        // rename.setOnAction(evt -> {
-        //     var newConcept = rename.getText();
-        //     if (newConcept != null) {
-        //       var localization = table.getSelectionModel()
-        //         .getSelectedItem();
-        //       if (localization != null) {
-        //           localization.setConcept(newConcept);
-        //           appController.update(localization);
-        //           table.getColumns().get(0).setVisible(false);
-        //           table.getColumns().get(0).setVisible(true);
-        //       }
-        //     }
-        // });
+        // // ----- Rename Combobox -----
 
         ComboBox<String> rename = new ComboBox<>();
         new FilteredComboBoxDecorator<>(rename, FilteredComboBoxDecorator.STARTSWITH_IGNORE_SPACES);
@@ -247,17 +193,10 @@ public class App extends Application {
             .addListener((observable, oldValue, newValue) -> {
                 var text = newValue == null ? null : newValue.getConcept();
                 rename.setAccessibleText(text);;
-                // rename.selectAll();
-                tempVal = text;
             });
 
-        // rename.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-        //     if (isNowFocused && rename.getAccessibleText().equals(tempVal)) {
-        //         //not sure
-        //     }
-        // });
         rename.setOnAction(evt -> {
-            var newConcept = rename.getAccessibleText();
+            var newConcept = rename.getValue();
             if (newConcept != null) {
               var localization = table.getSelectionModel()
                 .getSelectedItem();
@@ -276,7 +215,8 @@ public class App extends Application {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinSize(10,1);
 
-        // ----- Search Bar -----
+        // ----- Rename ComboBox -----
+
         Button upLoaconceptUpdBtn = new Button("Upload Concepts");
         upLoaconceptUpdBtn.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
