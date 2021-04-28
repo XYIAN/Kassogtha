@@ -258,6 +258,7 @@ public class App extends Application {
 
         Button downLoadBtn = new Button("Download");
 
+        // this button should encompass both upload functionalites, both for the autocomplete and the Localizations
         Button upLoadBtn = new Button("Upload");
         upLoadBtn.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
