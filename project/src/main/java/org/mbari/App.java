@@ -158,12 +158,9 @@ public class App extends Application {
         
         // ------------------------------- Table --------------------------------------------
 
-        //TODO: Insead of Strings make these the items that are added, have the items be renameable and add a button to them 
-
 
         HBox hBox = new HBox(table);
 
-        // HBox.setMargin(pane, new Insets(20,20,20,20));
         HBox.setMargin(table, new Insets(20,20,20,20));
 
 
@@ -186,14 +183,8 @@ public class App extends Application {
         rename.setItems(FXCollections.observableArrayList(conceptList));
 
         rename.setPromptText("Rename");
-        rename.setMinWidth(220);
+        rename.setMaxWidth(200);
         rename.setMinHeight(25);
-        table.getSelectionModel()
-            .selectedItemProperty()
-            .addListener((observable, oldValue, newValue) -> {
-                var text = newValue == null ? null : newValue.getConcept();
-                rename.setAccessibleText(text);;
-            });
 
         rename.setOnAction(evt -> {
             var newConcept = rename.getValue();
@@ -230,13 +221,15 @@ public class App extends Application {
             File selectedFile = fileChooser.showOpenDialog(stage);
             if(selectedFile != null){
                 appController.uploadConcepts(selectedFile);
+                conceptList = appController.getAutoFillStrings("new_concepts.json");
+                rename.setItems(FXCollections.observableArrayList(conceptList));
             }
            
         });
 
         VBox renameBox = new VBox(rename, upLoaconceptUpdBtn);
-        VBox.setMargin(rename, new Insets(10,20,20,10));
-        VBox.setMargin(upLoaconceptUpdBtn, new Insets(10,10,10,10));
+        VBox.setMargin(rename, new Insets(20,20,0,20));
+        VBox.setMargin(upLoaconceptUpdBtn, new Insets(10,20,10,20));
 
 
         HBox topHbox = new HBox(logoView, spacer,  renameBox);//logoView,
@@ -347,14 +340,7 @@ public class App extends Application {
         appController.delete(currentLoc);
 
     }
-/*
-    public void autoComplete(){
-        var gson = new Gson();
-        var concepts = gson.fromJson(stringOfJson, String[].class);
-        //handle listener 
-        items.addListener 
-    }
-*/
+    
     // after this function call the current location will be accessable
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
