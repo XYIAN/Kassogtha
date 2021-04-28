@@ -36,6 +36,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -263,9 +266,18 @@ public class App extends Application {
         upLoadBtn.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Json Concept File");
-            fileChooser.showOpenDialog(stage);
-    
+            fileChooser.setInitialFileName("new_concepts.json");
 
+            // limit the type of files that are allowed to be uploaded
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JSON file", "*.json")
+            );
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if(selectedFile != null){
+                appController.upload(selectedFile);
+            }
+
+           
         });
 
         Button clearBtn = new Button("Delete");

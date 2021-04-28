@@ -24,12 +24,15 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class AppController {
 
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
-    private final EventBus eventBus = new EventBus();
+    // private final EventBus eventBus = new EventBus();
 
     private IO io;
 
@@ -84,9 +87,9 @@ public class AppController {
         }
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
+    // public EventBus getEventBus() {
+    //     return eventBus;
+    // }
 
     public IO getIo() {
         return io;
@@ -146,6 +149,29 @@ public class AppController {
             System.out.println("[ERROR] AppController.save() - IOException: " + e.toString());
         }
     }
+
+
+    public void upload(File fileToUpload) {
+           
+        File dir = new File("/home/federico/Capstone/Kassogtha/project/src/main/resources");
+        String title = "newConcept.json";
+        FileWriter fw;
+        Gson gson = new GsonBuilder().create();
+
+        // JsonElement jsonE = JsonParser.parseString(new FileReader(fileToUpload));
+
+
+        String json = gson.toJson(fileToUpload);
+        try {
+            fw = new FileWriter(new File(dir, title));
+            fw.write(json);
+            fw.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    
 
 
 
