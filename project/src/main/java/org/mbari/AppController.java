@@ -106,6 +106,10 @@ public class AppController {
         if (videoIo != null) {
             log.debug("Seeking to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
+            Collection<Localization> loc = io.getSelectionController().getSelectedLocalizations(); 
+            io.getSelectionController().clearSelections(); 
+            io.getSelectionController().select(loc, true);
+            log.debug("Seeking to localization:", loc);
         }
     }
 
