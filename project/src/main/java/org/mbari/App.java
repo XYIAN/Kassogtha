@@ -31,9 +31,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent; 
 import javafx.scene.image.Image;
-import javafx.stage.Window;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.File;
@@ -200,8 +201,6 @@ public class App extends Application {
             }
         });
 
-
-
         final Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinSize(10,1);
@@ -245,11 +244,27 @@ public class App extends Application {
         saveBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event){
-                appController.save();
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.txt", "*.txt"));
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.json", "*.json"));
+                File fileToSave = fileChooser.showSaveDialog(null);
+                appController.save(fileToSave);
             }
         });
 
-        Button downLoadBtn = new Button("Download");
+        Button openBtn = new Button("Open");
+        openBtn.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("*.json", "*.json"));
+                File fileToOpen = fileChooser.showOpenDialog(null);
+                appController.open(fileToOpen);
+            }
+        });
 
         // this button should encompass both upload functionalites, both for the autocomplete and the Localizations
         Button playBtn = new Button("Play");
@@ -258,14 +273,13 @@ public class App extends Application {
 
         Button clearBtn = new Button("Delete");
         clearBtn.setOnAction(e -> deleteRowFromTable());
-
         Button seekBtn = new Button("Seek");
         seekBtn.setOnAction(e -> seekButtonClicked());
 
-        HBox hButtonBox = new HBox(saveBtn, downLoadBtn, clearBtn, seekBtn, playBtn);
+        HBox hButtonBox = new HBox(saveBtn, openBtn, clearBtn, seekBtn, playBtn);
         
         HBox.setMargin(saveBtn, new Insets(20,20,20,20));
-        HBox.setMargin(downLoadBtn, new Insets(20,20,20,20));
+        HBox.setMargin(openBtn, new Insets(20,20,20,20));
         HBox.setMargin(playBtn, new Insets(20,20,20,20));
         HBox.setMargin(clearBtn, new Insets(20,20,20,20));
         HBox.setMargin(seekBtn, new Insets(20,20,20,20));
@@ -284,7 +298,6 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-
         initComms(table);
 
         // ------------------------------- Stage --------------------------------------------
@@ -324,7 +337,6 @@ public class App extends Application {
                 }
             }
         });
-
         table.setItems(items);
     }
 
@@ -348,5 +360,4 @@ public class App extends Application {
         currentLoc = table.getSelectionModel().getSelectedItem();
         appController.seek(currentLoc.getElapsedTime());
     }
-
 }
