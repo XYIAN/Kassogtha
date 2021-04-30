@@ -104,8 +104,30 @@ public class AppController {
 
     public void seek(Duration duration) {
         if (videoIo != null) {
+            // seek to frame (send command is asyonchronous, gets put on queue)
             log.debug("Seeking to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
+            // wait for command queue to process send, force state to update
+            try {
+                log.debug("sleeping for 250 ms");
+                Thread.sleep(250);
+            }
+            catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            // get the selection from the Kassogtha table view
+            Optional<Localization> selectedOpt = app.getTable()
+                .getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .findFirst();
+            // create a collection to store the localization
+            Collection<Localization> localizations =  new ArrayList<Localization>();
+            // add the localization to the collection
+            localizations.add(selectedOpt.get());
+            // select the collection of a single localization
+            io.getSelectionController().select(localizations, true);
+            log.debug("selections {}", io.getSelectionController().getSelectedLocalizations());
         }
     }
 
@@ -119,21 +141,6 @@ public class AppController {
                 .getSelectedItems()
                 .stream()
                 .findFirst();
-        log.debug("[DEBUG] AppController.seek(): clearing selections");
-        io.getSelectionController().clearSelections();
-        // log.debug("[DEBUG] AppController.seek(): clearing localizations");
-        // io.getController().removeLocalizations(io.getController().getLocalizations());
-        // log.debug("[DEBUG] AppController.seek(): populating selections");
-        // io.getController().addLocalization(selectedOpt.get());
-        // log.debug("[DEBUG] AppController.seek(): getting localizations");
-        // System.out.println(io.getController().getLocalizations());
-        log.debug("[DEBUG] AppController.seek(): create collection");
-        Collection<Localization> localizations =  new ArrayList<Localization>();
-        log.debug("[DEBUG] AppController.seek(): populate collection");
-        localizations.add(selectedOpt.get());
-        log.debug("[DEBUG] AppController.seek(): selecting from collection");
-        io.getSelectionController().select(localizations, true);
-        log.debug("[DEBUG] AppController.seek(): seek");
         selectedOpt.ifPresent(item -> seek(item.getDuration()));
     }
 
