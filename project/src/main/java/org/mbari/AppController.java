@@ -102,6 +102,28 @@ public class AppController {
         return videoIo;
     }
 
+    public void seek(Localization localization) {
+        if (videoIo != null) {
+            // reactive programming (rxjava) approach to listen for seek command
+            videoIo.getIndexObservable()
+                .filter(v -> v.getElapsedTime().isPresent())
+                .filter(v -> {
+                    var t0 = v.getElapsedTime().get().toMillis();
+                    var t1 = localization.getElapsedTime().toMillis();
+                    return Math.abs(t0 - t1) < 250; // 250 ms threshold
+                })
+                .take(1)
+                .forEach(v -> {
+                    io.getSelectionController().select(List.of(localization), true);
+                    log.debug("selections {}", io.getSelectionController().getSelectedLocalizations());
+                });
+            videoIo.send(new SeekElapsedTimeCmd(localization.getElapsedTime()));
+            // seekElapsedTimeCmd doesn't tell us that the time changed, so we ask directly
+            videoIo.send(VideoCommands.REQUEST_ELAPSED_TIME);
+            // after send commands, filter should return true, and trigger the forEach code
+        }
+    }
+
     public void seek(Duration duration) {
         if (videoIo != null) {
             // seek to frame (send command is asyonchronous, gets put on queue)
