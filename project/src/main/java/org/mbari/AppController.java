@@ -135,12 +135,13 @@ public class AppController {
      * Seeks to the row selected in
      */
     public void seek() {
-        log.debug("[DEBUG] AppController.seek()");
+
         Optional<Localization> selectedOpt = app.getTable()
                 .getSelectionModel()
                 .getSelectedItems()
                 .stream()
                 .findFirst();
+
         selectedOpt.ifPresent(item -> seek(item.getDuration()));
     }
 
