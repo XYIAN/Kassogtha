@@ -110,6 +110,16 @@ public class App extends Application {
 
         table = new TableView<Localization>();
         table.setEditable(false);
+        table.setRowFactory(tableView -> {
+            TableRow<Localization> tableRow = new TableRow<>();
+            tableRow.setOnMouseClicked(event -> {
+                if (tableRow.getItem() != null) {
+                    // appController.seek(tableRow().getItem());
+                    appController.seek(tableRow.getItem().getElapsedTime());
+                }
+            });
+            return tableRow;
+        });
 
         var conceptCol = new TableColumn<Localization, String>("Name");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));

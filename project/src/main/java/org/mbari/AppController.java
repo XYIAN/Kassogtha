@@ -104,7 +104,7 @@ public class AppController {
 
     public void seek(Localization localization) {
         if (videoIo != null) {
-            // reactive programming (rxjava) approach to listen for seek command
+            // reactive programming (RxJava) approach to listen for seek command
             videoIo.getIndexObservable()
                 .filter(v -> v.getElapsedTime().isPresent())
                 .filter(v -> {
@@ -130,13 +130,7 @@ public class AppController {
             log.debug("Seeking to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
             // wait for command queue to process send, force state to update
-            try {
-                log.debug("sleeping for 250 ms");
-                Thread.sleep(250);
-            }
-            catch(InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+            this.sleep();
             // get the selection from the Kassogtha table view
             Optional<Localization> selectedOpt = app.getTable()
                 .getSelectionModel()
@@ -174,6 +168,9 @@ public class AppController {
 
 
     public void delete(Localization localization) {
+        io.getSelectionController().clearSelections();
+        this.sleep();
+        videoIo.send(new SeekElapsedTimeCmd(localization.getElapsedTime()));
         io.getController().removeLocalization(localization.getLocalizationUuid());
     }
 
@@ -301,4 +298,15 @@ public class AppController {
         return new ArrayList<>();
     }
     
+    private void sleep() {
+        try {
+            Integer threshold = 50;
+            log.debug("sleeping for " + threshold + " ms");
+            Thread.sleep(threshold);
+        }
+        catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }
