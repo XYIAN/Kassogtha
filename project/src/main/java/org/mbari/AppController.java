@@ -102,10 +102,48 @@ public class AppController {
         return videoIo;
     }
 
+    public void seek(Localization localization) {
+        if (videoIo != null) {
+            // reactive programming (RxJava) approach to listen for seek command
+            videoIo.getIndexObservable()
+                .filter(v -> v.getElapsedTime().isPresent())
+                .filter(v -> {
+                    var t0 = v.getElapsedTime().get().toMillis();
+                    var t1 = localization.getElapsedTime().toMillis();
+                    return Math.abs(t0 - t1) < 250; // 250 ms threshold
+                })
+                .take(1)
+                .forEach(v -> {
+                    io.getSelectionController().select(List.of(localization), true);
+                    log.debug("selections {}", io.getSelectionController().getSelectedLocalizations());
+                });
+            videoIo.send(new SeekElapsedTimeCmd(localization.getElapsedTime()));
+            // seekElapsedTimeCmd doesn't tell us that the time changed, so we ask directly
+            videoIo.send(VideoCommands.REQUEST_ELAPSED_TIME);
+            // after send commands, filter should return true, and trigger the forEach code
+        }
+    }
+
     public void seek(Duration duration) {
         if (videoIo != null) {
+            // seek to frame (send command is asyonchronous, gets put on queue)
             log.debug("Seeking to {}", duration);
             videoIo.send(new SeekElapsedTimeCmd(duration));
+            // wait for command queue to process send, force state to update
+            this.sleep();
+            // get the selection from the Kassogtha table view
+            Optional<Localization> selectedOpt = app.getTable()
+                .getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .findFirst();
+            // create a collection to store the localization
+            Collection<Localization> localizations =  new ArrayList<Localization>();
+            // add the localization to the collection
+            localizations.add(selectedOpt.get());
+            // select the collection of a single localization
+            io.getSelectionController().select(localizations, true);
+            log.debug("selections {}", io.getSelectionController().getSelectedLocalizations());
         }
     }
 
@@ -130,6 +168,9 @@ public class AppController {
 
 
     public void delete(Localization localization) {
+        io.getSelectionController().clearSelections();
+        this.sleep();
+        videoIo.send(new SeekElapsedTimeCmd(localization.getElapsedTime()));
         io.getController().removeLocalization(localization.getLocalizationUuid());
     }
 
@@ -257,4 +298,15 @@ public class AppController {
         return new ArrayList<>();
     }
     
+    private void sleep() {
+        try {
+            Integer threshold = 50;
+            log.debug("sleeping for " + threshold + " ms");
+            Thread.sleep(threshold);
+        }
+        catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }

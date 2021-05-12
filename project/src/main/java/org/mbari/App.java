@@ -110,6 +110,16 @@ public class App extends Application {
 
         table = new TableView<Localization>();
         table.setEditable(false);
+        table.setRowFactory(tableView -> {
+            TableRow<Localization> tableRow = new TableRow<>();
+            tableRow.setOnMouseClicked(event -> {
+                if (tableRow.getItem() != null) {
+                    // appController.seek(tableRow().getItem());
+                    appController.seek(tableRow.getItem().getElapsedTime());
+                }
+            });
+            return tableRow;
+        });
 
         var conceptCol = new TableColumn<Localization, String>("Name");
         conceptCol.setCellValueFactory(new PropertyValueFactory<Localization, String>("concept"));
@@ -357,6 +367,6 @@ public class App extends Application {
     private void seekButtonClicked(){
         System.out.println(formatDuration(table.getSelectionModel().getSelectedItem().getElapsedTime()));
         currentLoc = table.getSelectionModel().getSelectedItem();
-        appController.seek(currentLoc.getElapsedTime());
+        appController.seek(currentLoc);
     }
 }
